@@ -1,0 +1,52 @@
+checkpoint:1754660940.4384203
+checkpoint:1754660941.4499469
+checkpoint:1754660942.4486556
+checkpoint:1754660943.4417439
+checkpoint:1754660944.4414718
+checkpoint:1754660945.4416573
+checkpoint:1754660946.4383838
+checkpoint:1754660947.436682
+checkpoint:1754660948.4375532
+checkpoint:1754660949.4444928
+domain: claude.ai
+checkpoint:1754660950.446821
+checkpoint:1754660951.4433112
+domain: a-cdn.anthropic.com
+checkpoint:1754660952.4407914
+domain: s-cdn.anthropic.com
+domain: widget.intercom.io
+checkpoint:1754660953.4340203
+domain: js.intercomcdn.com
+domain: js.intercomcdn.com
+domain: a-cdn.claude.ai
+domain: accounts.google.com
+domain: www.gstatic.com
+checkpoint:1754660954.483496
+domain: www.google.com
+domain: www.gstatic.com
+domain: www.gstatic.com
+checkpoint:1754660955.4459684
+checkpoint:1754660956.4456434
+checkpoint:1754660957.4407308
+checkpoint:1754660958.4361255
+checkpoint:1754660959.4445696
+checkpoint:1754660960.440323
+checkpoint:1754660961.4382389
+checkpoint:1754660962.4491298
+checkpoint:1754660963.4472845
+checkpoint:1754660964.4425268
+checkpoint:1754660965.436193
+checkpoint:1754660966.4426079
+checkpoint:1754660967.4382038
+checkpoint:1754660968.438895
+checkpoint:1754660969.4488008
+checkpoint:1754660970.4461534
+checkpoint:1754660971.4429061
+checkpoint:1754660972.4394925
+checkpoint:1754660973.4368873
+checkpoint:1754660974.4493742
+checkpoint:1754660975.446694
+checkpoint:1754660976.4420645
+checkpoint:1754660977.4401803
+checkpoint:1754660978.4374318
+checkpoint:1754660979.449271

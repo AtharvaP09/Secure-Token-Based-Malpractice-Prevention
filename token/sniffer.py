@@ -8,12 +8,23 @@ import json
 import os
 import hmac
 import hashlib
+import sys
 
-config_file = os.path.join(os.path.dirname(__file__), "config.json")
+
+
+if getattr(sys, 'frozen', False):
+    # Running as bundled EXE
+    exe_dir = os.path.dirname(sys.executable)
+else:
+    # Running from script
+    exe_dir = os.path.dirname(__file__)
+
+config_file = os.path.join(exe_dir, "config.json")
+
 with open(config_file, "r") as f:
     config = json.load(f)
 
-print(config)
+
 
 key = 'hackathon25'
 key = key.encode()
@@ -25,15 +36,15 @@ config_data = config['data'].encode()
 
 newhmac = hmac.new(key, config_data, hashlib.sha256).hexdigest()
 status = hmac.compare_digest(oldhmac, newhmac)
-print(status)
+
 
 file = open('data.txt', 'a')
 
 
-root = tk.Tk()
-root.mainloop()
+# root = tk.Tk()
+# root.mainloop()
 
-root.quit()
+# root.quit()
 
 def foo():
     print(time.time())
