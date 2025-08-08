@@ -1,0 +1,88 @@
+checkpoint:1754665767.2099042
+checkpoint:1754665768.2034402
+checkpoint:1754665769.2084277
+domain: variations.brave.com
+domain: go-updater.brave.com
+domain: go-updater.brave.com
+domain: go-updater.brave.com
+domain: go-updater.brave.com
+domain: go-updater.brave.com
+domain: go-updater.brave.com
+domain: api.nordvpn.com
+checkpoint:1754665770.2059894
+domain: cloudflare-ech.com
+domain: cloudflare-ech.com
+checkpoint:1754665771.2029855
+checkpoint:1754665772.2018373
+domain: go-updater.brave.com
+domain: brave-core-ext.s3.brave.com
+domain: brave-core-ext.s3.brave.com
+domain: brave-core-ext.s3.brave.com
+domain: brave-core-ext.s3.brave.com
+checkpoint:1754665773.201257
+domain: componentupdater.brave.com
+domain: go-updater.brave.com
+domain: componentupdater.brave.com
+domain: go-updater.brave.com
+checkpoint:1754665774.21071
+checkpoint:1754665775.2098267
+checkpoint:1754665776.2079203
+checkpoint:1754665777.2088225
+checkpoint:1754665778.2028594
+checkpoint:1754665779.2151098
+domain: chat.openai.com
+domain: chatgpt.com
+domain: cdn.oaistatic.com
+domain: cdn.oaistatic.com
+domain: cdn.oaistatic.com
+domain: cdn.oaistatic.com
+domain: cdn.oaistatic.com
+domain: cdn.oaistatic.com
+domain: cdn.oaistatic.com
+domain: cdn.oaistatic.com
+checkpoint:1754665780.2071571
+checkpoint:1754665781.204685
+checkpoint:1754665782.212237
+checkpoint:1754665783.2108185
+checkpoint:1754665784.207614
+checkpoint:1754665785.2141829
+checkpoint:1754665786.213373
+checkpoint:1754665787.2096484
+checkpoint:1754665788.211274
+domain: a-cdn.anthropic.com
+domain: s-cdn.anthropic.com
+checkpoint:1754665789.2071705
+domain: widget.intercom.io
+domain: js.intercomcdn.com
+domain: js.intercomcdn.com
+checkpoint:1754665790.2059052
+domain: a-cdn.claude.ai
+domain: accounts.google.com
+checkpoint:1754665791.2018843
+domain: www.gstatic.com
+domain: gemini.google.com
+domain: www.gstatic.com
+domain: www.gstatic.com
+checkpoint:1754665792.2096608
+domain: www.gstatic.com
+checkpoint:1754665793.217112
+domain: ogads-pa.clients6.google.com
+domain: apis.google.com
+domain: waa-pa.clients6.google.com
+domain: maps.googleapis.com
+domain: signaler-pa.clients6.google.com
+checkpoint:1754665794.204764
+domain: lh3.googleusercontent.com
+checkpoint:1754665795.2125921
+checkpoint:1754665796.2046487
+domain: api.honeycomb.io
+checkpoint:1754665797.2121222
+checkpoint:1754665798.209801
+checkpoint:1754665799.2098455
+checkpoint:1754665800.203035
+checkpoint:1754665801.2065074
+checkpoint:1754665802.2089753
+checkpoint:1754665803.2057614
+checkpoint:1754665804.2038126
+checkpoint:1754665805.2027388
+checkpoint:1754665806.2054226

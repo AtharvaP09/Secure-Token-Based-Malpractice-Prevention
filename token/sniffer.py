@@ -31,36 +31,40 @@ key = key.encode()
 
 #first check hash
 
-oldhmac = config['hmac']
-config_data = config['data'].encode()
+# oldhmac = config['hmac']
+# config_data = config['data'].encode()
 
-newhmac = hmac.new(key, config_data, hashlib.sha256).hexdigest()
-status = hmac.compare_digest(oldhmac, newhmac)
-
-
-file = open('data.txt', 'a')
+# newhmac = hmac.new(key, config_data, hashlib.sha256).hexdigest()
+# status = hmac.compare_digest(oldhmac, newhmac)
 
 
-# root = tk.Tk()
-# root.mainloop()
+file = open('data.txt', 'a', encoding='utf-8')
 
-# root.quit()
+
+root = tk.Tk()
+root.mainloop()
+
+root.quit()
 
 def foo():
     print(time.time())
     file.write('checkpoint:'+str(time.time())+'\n')
+    file.flush()
+    os.fsync(file.fileno())
     
 
 
-def writeToFile(info):
-    file.write("domain: "+info+ '\n')
+def writeToFile(tag, info):
+    file.write(tag+":"+info+ '\n')
+    file.flush()
+    os.fsync(file.fileno())
 
 def http_sniffer(pkt):
     if pkt.haslayer(HTTPRequest):
         host = pkt[HTTPRequest].Host.decode() if pkt[HTTPRequest].Host else "Unknown"
         path = pkt[HTTPRequest].Path.decode() if pkt[HTTPRequest].Path else "/"
         print(f"[HTTP] Visited: http://{host}{path}")
-        writeToFile(f"{host}{path}")
+        writeToFile('domain', f"{host}{path}")
 
 def https_sniffer(pkt):
     if pkt.haslayer(TLSClientHello):
@@ -69,7 +73,7 @@ def https_sniffer(pkt):
                 try:
                     domain = ext.servernames[0].servername.decode()
                     print(f"[HTTPS] Visited domain: {domain}")
-                    writeToFile(domain)
+                    writeToFile('domain',domain)
                 except:
                     pass
 
@@ -86,5 +90,7 @@ print("Sniffing HTTP/HTTPS traffic... Press Ctrl+C to stop.")
 
 sniff(filter="tcp port 80 or tcp port 443 or tcp port 8080", prn=combined_sniffer, store=0, timeout=40)
 print("End")
+
+writeToFile('status',"END")
 
 inter.cancel()
