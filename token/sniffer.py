@@ -24,38 +24,57 @@ config_file = os.path.join(exe_dir, "config.json")
 with open(config_file, "r") as f:
     config = json.load(f)
 
-
+ledgertext = ''
 
 key = 'hackathon25'
 key = key.encode()
 
 #first check hash
 
-# oldhmac = config['hmac']
-# config_data = config['data'].encode()
+oldhmac = config['hmac']
 
-# newhmac = hmac.new(key, config_data, hashlib.sha256).hexdigest()
-# status = hmac.compare_digest(oldhmac, newhmac)
+#decrypt data here
+config_data = config['data'].encode()
 
+newhmac = hmac.new(key, config_data, hashlib.sha256).hexdigest()
+status = hmac.compare_digest(oldhmac, newhmac)
+print(status)
 
-file = open('data.txt', 'a', encoding='utf-8')
+file = open('ledger.txt', 'a', encoding='utf-8')
 
+def gethash(string):
+    global key
+    binary = string.encode()
+    h =  hmac.new(key, binary, hashlib.sha256).hexdigest()
+    return h
 
 root = tk.Tk()
+
+root.geometry('400x250')
+root.title('Malpractice Prevention')
+
+msg = tk.StringVar()
+msg.set("your supervision will start now\n Evertything you do will be monitored, EVERYTHING. \nPls don't act smart :)")
+
+label = tk.Label(root, textvariable=msg )
+label.pack(expand=True)
+
 root.mainloop()
 
 root.quit()
 
 def foo():
     print(time.time())
-    file.write('checkpoint:'+str(time.time())+'\n')
+    t = str(time.time())
+
+    file.write('checkpoint:'+t+"-"+gethash(t)+',')
     file.flush()
     os.fsync(file.fileno())
     
 
 
 def writeToFile(tag, info):
-    file.write(tag+":"+info+ '\n')
+    file.write(tag+":"+info+'-'+gethash(info)+',')
     file.flush()
     os.fsync(file.fileno())
 
@@ -84,13 +103,19 @@ def combined_sniffer(pkt):
         https_sniffer(pkt)
 
 
-inter = setInterval(1, foo)
+inter = setInterval(3, foo)
+
+print(config_data)
+writeToFile('meta', str(config_data))
 
 print("Sniffing HTTP/HTTPS traffic... Press Ctrl+C to stop.")
 
+writeToFile('status', 'START')
 sniff(filter="tcp port 80 or tcp port 443 or tcp port 8080", prn=combined_sniffer, store=0, timeout=40)
 print("End")
 
+
 writeToFile('status',"END")
+
 
 inter.cancel()
