@@ -21,7 +21,7 @@ def encrypt(plaintext: str, key: bytes, iv: bytes) -> str:
 
 
 # ---------------- Main Code ---------------- #
-data  = "{\"start\":7687638787,\"id\":\"YGD65363\",\"name\":\"Tom\",\"sessionid\":\"ILU5U\"}"
+data  = "{\"start\":7687638787,\"id\":\"YGD65363\",\"name\":\"Cruise\",\"sessionid\":\"ILU5U\"}"
 
 # Generate key (SHA-256 hash of "hackathon25") → 32 bytes AES-256 key
 key = hashlib.sha256(b"hackathon25").digest()
@@ -46,3 +46,7 @@ config["hmac"] = hmac_value
 
 print(config)
 print(json.dumps(config, indent=4))
+
+with open('config.json', 'w') as f:
+    json.dump(config, f, indent=4)
+

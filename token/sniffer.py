@@ -75,12 +75,13 @@ key = key.encode()
 
 oldhmac = config['hmac']
 iv_string = config['iv']
+ciphertext = config['data']  #ciphertext
 
 #decrypt data here
 decrypted_data = decrypt(config['data'] , keystring, iv_string)
 
 #take data for hmac
-config_data = iv_string.encode() + decrypted_data.encode()
+config_data = iv_string.encode() + ciphertext.encode()
 
 #generate hmac
 newhmac = hmac.new(key, config_data, hashlib.sha256).hexdigest()
