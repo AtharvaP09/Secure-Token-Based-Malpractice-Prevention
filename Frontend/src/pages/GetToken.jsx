@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Upload from './Upload';
 
 function GetToken() {
   const [userid, setuserID] = useState()
@@ -38,6 +39,7 @@ window.URL.revokeObjectURL(url);
     <div>
       <input type="text" onChange={(e)=>setuserID(e.target.value)} />
         <button onClick={()=>getToken()}>get Token</button>
+        <Upload/>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import archiver from "archiver";
+import multer from "multer";
 
 const app = express();
 app.use(express.json());
@@ -19,6 +20,9 @@ app.use(
 // config.iv = 'Its a fun world'
 // let data = "{\"start\":7687638787,\"id\":\"YGD65363\",\"name\":\"Tom\",\"sessionid\":\"ILU5U\"}"
 // const newkey = 'hackathon25'
+
+const storage = multer.memoryStorage()
+const upload = multer({storage})
 
 function deriveKeyAndIv(keyStr, ivStr) {
   const key = crypto.createHash("sha256").update(keyStr).digest(); // 32 bytes
@@ -131,9 +135,9 @@ app.post("/gettoken",async (req, res) => {
         if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
 
         // remove folder recursively
-        if (fs.existsSync(userDir)) {
-          fs.rmSync(userDir, { recursive: true, force: true });
-        }
+        // if (fs.existsSync(userDir)) {
+        //   fs.rmSync(userDir, { recursive: true, force: true });
+        // }
 
         console.log(`Cleaned up ${zipPath} and ${userDir}`);
       } catch (cleanupErr) {
@@ -151,6 +155,42 @@ app.post("/gettoken",async (req, res) => {
   archive.directory(userDir, false);
   archive.finalize();
 });
+
+app.post('/submit', upload.single("ledger"),  (req, res)=>{
+  try{
+
+    const fileBuffer = req.file.buffer; // it's a Buffer
+    const text = fileBuffer.toString("utf-8"); // read as text
+
+    console.log("Uploaded file content");
+
+    //analyze the text
+
+    console.log('doing something');
+    
+    const words = text.split(',')
+    console.log(words);
+    
+
+    for (let index = 0; index < words.length; index++) {
+      const word = words[index];
+      
+      let tag = word.split(':')[0]
+      let value = word.split(':')[1]
+
+      console.log({tag, value});
+     
+      
+      
+    }
+    
+    res.json({ status: "success", length: text.length });
+
+
+  }catch{
+
+  }
+})
 
 app.listen(5643, () => {
   console.log("APP IS RUNNING");

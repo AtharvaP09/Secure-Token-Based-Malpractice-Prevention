@@ -15,7 +15,9 @@ import sys
 import base64
 
 
+
 def encrypt(plaintext: str, key_str: str, iv_str: str) -> str:
+    
     # Derive AES key (32 bytes) and IV (16 bytes)
     key = hashlib.sha256(key_str.encode()).digest()   # AES-256 key
     iv = hashlib.md5(iv_str.encode()).digest()        # 16-byte IV
@@ -78,16 +80,21 @@ iv_string = config['iv']
 ciphertext = config['data']  #ciphertext
 
 #decrypt data here
-decrypted_data = decrypt(config['data'] , keystring, iv_string)
 
-#take data for hmac
-config_data = iv_string.encode() + ciphertext.encode()
+try:
+    decrypted_data = decrypt(config['data'] , keystring, iv_string)
+    #take data for hmac
+    config_data = iv_string.encode() + ciphertext.encode()
 
-#generate hmac
-newhmac = hmac.new(key, config_data, hashlib.sha256).hexdigest()
+    #generate hmac
+    newhmac = hmac.new(key, config_data, hashlib.sha256).hexdigest()
 
-#chack status
-status = hmac.compare_digest(oldhmac, newhmac)
+    #chack status
+    status = hmac.compare_digest(oldhmac, newhmac)
+
+except:
+    status = False
+
 print(status)
 
 domains = []
@@ -100,19 +107,7 @@ def gethash(string):
     h =  hmac.new(key, binary, hashlib.sha256).hexdigest()
     return h
 
-root = tk.Tk()
 
-root.geometry('400x250')
-root.title('Malpractice Prevention')
-
-msg = tk.StringVar()
-msg.set("your supervision will start now\n Evertything you do will be monitored, EVERYTHING. \nPls don't act smart :)")
-
-label = tk.Label(root, textvariable=msg )
-label.pack(expand=True)
-
-root.mainloop()
-root.quit()
 
 def writeToFile(tag, info):
     file.write(tag+":"+info + ',')
@@ -157,6 +152,29 @@ writeToFile('meta', str(config_data))
 print("Sniffing HTTP/HTTPS traffic... Press Ctrl+C to stop.")
 
 writeToFile('status', 'START')
+
+root = tk.Tk()
+
+root.geometry('400x250')
+root.title('Malpractice Prevention')
+
+msg = tk.StringVar()
+
+if status:
+    msg.set("your supervision will start now\n Evertything you do will be monitored, EVERYTHING. \nPls don't act smart :)")
+
+else:
+    msg.set("You tried to tamper the config file,\n you shouldnt have done that, \ntry getting another token, \n and this time be a little honest")
+
+label = tk.Label(root, textvariable=msg )
+label.pack(expand=True)
+
+root.mainloop()
+root.quit()
+
+if not status:
+    sys.exit()
+
 sniff(filter="tcp port 80 or tcp port 443 or tcp port 8080", prn=combined_sniffer, store=0, timeout=40)
 print("End")
 
