@@ -43,3 +43,7 @@ def login():
         return jsonify({"message": "Invalid credentials"}), 401
 
     return jsonify({"message": "Login successful", "user_id": user.id}), 200
+
+@app.route('/gettoken')
+def getToken():
+    pass
