@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import API from "../api";
 
-function AuthForm() {
+function UserAuth() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState("");
@@ -102,4 +102,4 @@ function AuthForm() {
   );
 }
 
-export default AuthForm;
+export default UserAuth;
