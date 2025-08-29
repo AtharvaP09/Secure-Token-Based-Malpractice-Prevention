@@ -110,7 +110,7 @@ def gethash(string):
 
 
 def writeToFile(tag, info):
-    file.write(tag+":"+info + '<<SEP>>')
+    file.write(tag+":"+info + ',')
     file.flush()
     os.fsync(file.fileno())
 
@@ -147,7 +147,7 @@ def combined_sniffer(pkt):
 inter = setInterval(3, checkTime)
 
 print(config_data)
-writeToFile('meta', str(decrypted_data))
+writeToFile('meta', str(config_data))
 
 print("Sniffing HTTP/HTTPS traffic... Press Ctrl+C to stop.")
 

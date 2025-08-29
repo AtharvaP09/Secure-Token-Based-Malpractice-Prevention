@@ -20,7 +20,7 @@ export default function Upload(){
         });
         
 
-        const data = await response.json()
+        const data = response.json()
 
         console.log(data);
         

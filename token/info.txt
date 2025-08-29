@@ -1,9 +1,5 @@
 ye token ka code hai, isko pyinstller se exe file banana hai end mai
 
-command - 
-
-pyinstaller --onefile -w sniffer.py
-
 
 iske dist folder mai exe file hai
 

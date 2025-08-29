@@ -12,7 +12,7 @@ function GetToken() {
             'Content-Type' : 'application/json'
           }, 
           body : JSON.stringify({
-            roomid : 'ILUBABY', 
+            roomid : '12345678', 
             name : 'John', 
             userid : userid
           })
