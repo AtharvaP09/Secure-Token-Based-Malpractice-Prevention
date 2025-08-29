@@ -1,6 +1,9 @@
 ye token ka code hai, isko pyinstller se exe file banana hai end mai
 
 
+pyinstaller --onefile -w filename.py
+
+
 iske dist folder mai exe file hai
 
 

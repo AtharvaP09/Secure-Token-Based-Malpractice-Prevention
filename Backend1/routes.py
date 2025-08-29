@@ -9,6 +9,9 @@ import shutil
 import zipfile
 import hashlib
 import hmac
+import base64
+from app import con
+from flask import Response
 
 #Default
 @app.route('/')
@@ -226,16 +229,20 @@ def submit():
         words = text.split('<<SEP>>')
 
         tags = []
-
+        domains = []
         metaValue = None
         start = False
         end = False
+        timestamp = None
         
         for index, word in enumerate(words):
             if ':' in word:
                 parts = word.split(':', 1)  # Split only on first colon
                 tag = parts[0]
                 value = parts[1] if len(parts) > 1 else ''
+
+                if tag == 'checkpoint':
+                    timestamp = value
 
                 if tag == 'meta':
                     metaValue = value
@@ -246,10 +253,16 @@ def submit():
                 if tag == 'status' and value == 'END':
                     end = True
                 
+                if tag == 'domain':
+                    domains.append({'domain':value , 'time':timestamp})
+
+
+            
 
                 tags.append([tag , value])
         
         print(metaValue, start, end)
+        
         metaValue = json.loads(metaValue)
         print(metaValue['roomid'])
 
@@ -257,14 +270,17 @@ def submit():
         if not metaValue:
             return jsonify({})
         
-
+        roomid = metaValue['roomid']
+        userid = metaValue['userid']
         
 
         #get restricted words
         cursor = None
         banned = []
+        cheats = []
         try:
             cursor = con.cursor()   
+            #database
             cursor.execute('SELECT restricted FROM rooms WHERE roomid = %s ;', [metaValue["roomid"]])
             result = cursor.fetchall()
             print("Result:", result)
@@ -272,16 +288,33 @@ def submit():
             if len(result):
                 banned = result[0][0].split(',')
 
-            print(banned)
+
+            for domainObject in domains:
+                
+                dname = domainObject['domain']
+
+                for b in banned:
+                    b = b.strip()
+                    dname = dname.strip()
+                    if b in dname:
+                        print(b, dname)
+                        cheats.append(domainObject)
+
+            
+
+            cursor.execute('insert into submissions values( %s, %s , %s, sysdate());', [roomid, userid, json.dumps(cheats)])
+            con.commit()
+
+            print(cheats)
+
 
         except Exception as e:
-            print("Database Error:", e)
+            print("Error:", e.args)
 
         finally:
-            if cursor is not None:   # only close if it was created
+            if cursor is not None:   
                 cursor.close()
         
-        cheats = []
 
         
         return jsonify({
@@ -293,6 +326,19 @@ def submit():
     except Exception as e:
         print(f"Error in submit: {e}")
         return jsonify({'error': 'Internal server error'}), 500
+    
+
+@app.route('/results', method = ['POST'])
+def getResults():
+    #get roomid and creator(userid)
+
+    #using userid, check if creator is authentic
+
+    #using roomid, get all the results
+
+    #send results to user
+
+    pass
 
 # Helper function to clean up files (if needed separately)
 @app.route('/cleanup/<userid>', methods=['DELETE'])

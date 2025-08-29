@@ -25,8 +25,10 @@ cursor1.execute("""CREATE TABLE IF NOT EXISTS rooms (
     start TIME NULL,
     end INT NULL,
     creator VARCHAR(100) NULL,
-    restricted VARCHAR(2000) NULL
+    restricted json
 );""")
+
+cursor1.execute('create table if not exists submissions(roomid varchar(200), userid varchar(200), cheats json, time datetime);')
 
 cursor1.close()
 
