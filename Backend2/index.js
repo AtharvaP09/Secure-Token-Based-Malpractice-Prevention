@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import archiver from "archiver";
 import multer from "multer";
+import mysql2 from 'mysql2'
 
 const app = express();
 app.use(express.json());
@@ -170,7 +171,8 @@ app.post('/submit', upload.single("ledger"),  (req, res)=>{
     
     const words = text.split(',')
     console.log(words);
-    
+
+    //get meta info about submission
 
     for (let index = 0; index < words.length; index++) {
       const word = words[index];
