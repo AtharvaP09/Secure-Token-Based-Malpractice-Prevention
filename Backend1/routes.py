@@ -175,16 +175,14 @@ def gettoken_handler():
                     arcname = os.path.relpath(file_path, user_dir)
                     zipf.write(file_path, arcname)
         
+
+        print('zipped', zip_path)
         # Send the zip file
-        response = send_file(
-            zip_path,
-            as_attachment=True,
-            download_name=f"{userid}.zip",
-            mimetype='application/zip'
-        )
-        
-        # Cleanup after response is fully sent
-        def cleanup():
+
+        def generate():
+            with open(zip_path, "rb") as f:
+                yield from f
+            # cleanup happens only after streaming is done
             try:
                 if os.path.exists(zip_path):
                     os.unlink(zip_path)
@@ -194,9 +192,11 @@ def gettoken_handler():
             except Exception as e:
                 print(f"Cleanup error: {e}")
 
-        response.call_on_close(cleanup)
-        
-        return response
+        return Response(
+            generate(),
+            mimetype="application/zip",
+            headers={"Content-Disposition": f"attachment; filename={userid}.zip"}
+        )
 
     except Exception as e:
         print("Error:", e)
@@ -223,22 +223,71 @@ def submit():
         # Analyze the text
         print('doing something')
         
-        words = text.split(',')
-        print(words)
+        words = text.split('<<SEP>>')
+
+        tags = []
+
+        metaValue = None
+        start = False
+        end = False
         
         for index, word in enumerate(words):
             if ':' in word:
                 parts = word.split(':', 1)  # Split only on first colon
                 tag = parts[0]
                 value = parts[1] if len(parts) > 1 else ''
+
+                if tag == 'meta':
+                    metaValue = value
+
+                if tag == 'status' and value == 'START':
+                    start = True
+
+                if tag == 'status' and value == 'END':
+                    end = True
                 
-                print({'tag': tag, 'value': value})
+
+                tags.append([tag , value])
+        
+        print(metaValue, start, end)
+        metaValue = json.loads(metaValue)
+        print(metaValue['roomid'])
+
+
+        if not metaValue:
+            return jsonify({})
+        
 
         
+
+        #get restricted words
+        cursor = None
+        banned = []
+        try:
+            cursor = con.cursor()   
+            cursor.execute('SELECT restricted FROM rooms WHERE roomid = %s ;', [metaValue["roomid"]])
+            result = cursor.fetchall()
+            print("Result:", result)
+
+            if len(result):
+                banned = result[0][0].split(',')
+
+            print(banned)
+
+        except Exception as e:
+            print("Database Error:", e)
+
+        finally:
+            if cursor is not None:   # only close if it was created
+                cursor.close()
+        
+        cheats = []
+
         
         return jsonify({
             'status': 'success',
-            'length': len(text)
+            'length': len(text),
+            'info' : metaValue
         })
         
     except Exception as e:
@@ -264,3 +313,4 @@ def cleanup_user_files(userid):
         return jsonify({'message': f'Cleaned up files for user {userid}'}), 200
     except Exception as e:
         return jsonify({'error': f'Cleanup failed: {e}'}), 500
+
