@@ -13,6 +13,8 @@ import hmac
 import hashlib
 import sys
 import base64
+import random
+import string
 
 
 
@@ -53,6 +55,30 @@ def decrypt(ciphertext_b64: str, key_str: str, iv_str: str) -> str:
     plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
 
     return plaintext.decode("utf-8")
+
+
+CHARS = string.printable
+
+def generate_keySubs(seed=None):
+    chars = list(CHARS)
+    if seed is not None:
+        random.seed(seed)  # reproducibility
+    shuffled = chars[:]
+    random.shuffle(shuffled)
+    
+    encrypt_map = dict(zip(chars, shuffled))
+    decrypt_map = dict(zip(shuffled, chars))
+    
+    return encrypt_map, decrypt_map
+
+
+def encryptSubs(text, encrypt_map):
+    return "".join(encrypt_map.get(ch, ch) for ch in text)
+
+
+def decryptSubs(ciphertext, decrypt_map):
+    return "".join(decrypt_map.get(ch, ch) for ch in ciphertext) 
+
 
 
 """code starts here"""
@@ -99,6 +125,12 @@ print(status)
 
 domains = []
 
+dData = json.loads(decrypted_data)
+subs = dData['subs']
+# print(subs)
+
+emap , dmap = generate_keySubs(subs)
+
 file = open('ledger.txt', 'a', encoding='utf-8')
 
 def gethash(string):
@@ -110,7 +142,7 @@ def gethash(string):
 
 
 def writeToFile(tag, info):
-    file.write(tag+":"+info + '<<SEP>>')
+    file.write(encryptSubs(tag+":"+info + '<<SEP>>', emap))
     file.flush()
     os.fsync(file.fileno())
 
@@ -161,10 +193,10 @@ root.title('Malpractice Prevention')
 msg = tk.StringVar()
 
 if status:
-    msg.set("your supervision will start now\n Evertything you do will be monitored, EVERYTHING. \nPls don't act smart :)")
+    msg.set("your supervision will start now\n Evertything you do will be monitored, EVERYTHING. \nPls don't act smart :)\n\nYou may close this window")
 
 else:
-    msg.set("You tried to tamper the config file,\n you shouldnt have done that, \ntry getting another token, \n and this time be a little honest")
+    msg.set("You tried to tamper the config file,\n you shouldnt have done that, \ntry getting another token, \n and next time be a little honest")
 
 label = tk.Label(root, textvariable=msg )
 label.pack(expand=True)

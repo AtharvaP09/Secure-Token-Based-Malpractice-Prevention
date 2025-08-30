@@ -12,6 +12,39 @@ import hmac
 import base64
 from app import con
 from flask import Response
+import string
+import random
+
+def randomString(length):
+    random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=length)).upper()
+    return random_string
+
+# Character set: all printable ASCII
+CHARS = string.printable  
+
+def generate_key(seed=None):
+    """Generate encryption and decryption maps."""
+    chars = list(CHARS)
+    if seed is not None:
+        random.seed(seed)  # reproducibility
+    shuffled = chars[:]
+    random.shuffle(shuffled)
+    
+    encrypt_map = dict(zip(chars, shuffled))
+    decrypt_map = dict(zip(shuffled, chars))
+    
+    return encrypt_map, decrypt_map
+
+
+def encryptSubs(text, encrypt_map):
+    """Encrypt using substitution cipher."""
+    return "".join(encrypt_map.get(ch, ch) for ch in text)
+
+
+def decryptSubs(ciphertext, decrypt_map):
+    """Decrypt using substitution cipher."""
+    return "".join(decrypt_map.get(ch, ch) for ch in ciphertext)
+
 
 #Default
 @app.route('/')
@@ -142,10 +175,14 @@ def gettoken_handler():
             print(f"Warning: Source executable not found at {source_exe}")
         
         # Prepare data for encryption
+
+        substext = os.getenv('SUBS_SEED')
+
         token_data = {
             'name': name,
             'roomid': roomid,
-            'userid': userid
+            'userid': userid,
+            'subs' : substext
         }
         
         iv = "deg83tbd87682r3e2b"
@@ -156,12 +193,14 @@ def gettoken_handler():
         # Create HMAC
         hmac_input = iv.encode('utf-8') + ciphertext.encode('utf-8')
         hmac_hash = hmac.new(key, hmac_input, hashlib.sha256).hexdigest()
+
+       
         
         # Create config
         config = {
             'iv': iv,
             'data': ciphertext,
-            'hmac': hmac_hash
+            'hmac': hmac_hash,
         }
         
         # Write config file
@@ -225,6 +264,13 @@ def submit():
         
         # Analyze the text
         print('doing something')
+
+        ##decrypt the text
+        _, decrypt_map = generate_key(seed=os.getenv('SUBS_SEED'))
+
+        decryptedText = decryptSubs(text, decrypt_map)
+
+        text = decryptedText
         
         words = text.split('<<SEP>>')
 
@@ -302,7 +348,7 @@ def submit():
 
             
 
-            cursor.execute('insert into submissions values( %s, %s , %s, sysdate());', [roomid, userid, json.dumps(cheats)])
+            cursor.execute('insert into submissions(roomid, userid, cheats, time) values( %s, %s , %s, sysdate());', [roomid, userid, json.dumps(cheats)])
             con.commit()
 
             print(cheats)
@@ -328,7 +374,7 @@ def submit():
         return jsonify({'error': 'Internal server error'}), 500
     
 
-@app.route('/results', method = ['POST'])
+@app.route('/results', methods = ['POST'])
 def getResults():
     #get roomid and creator(userid)
 
@@ -338,6 +384,11 @@ def getResults():
 
     #send results to user
 
+    length = 8
+    random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=length)).upper()
+    print(random_string)
+
+    return jsonify({'msg' : random_string})
     pass
 
 # Helper function to clean up files (if needed separately)

@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 
+
 def encrypt(data, key, iv):
     # Derive AES key (32 bytes) and IV (16 bytes) - match your Node.js implementation
     key_bytes = hashlib.sha256(key.encode()).digest()   # 32 bytes key
@@ -26,12 +27,14 @@ def encrypt(data, key, iv):
 # Input data
 name = "John"
 roomid = "12345678"
-userid = "42"
+userid = "19276gz2ed"
+ceasar = 'you dont have the cards'
 
 data = {
     "name": name,
     "roomid": roomid,
-    "userid": userid
+    "userid": userid,
+    "subs" : ceasar
 }
 
 keystring = "hackathon25"
