@@ -14,6 +14,7 @@ from app import con
 from flask import Response
 import string
 import random
+import jwt
 
 def randomString(length):
     random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=length)).upper()
@@ -85,22 +86,22 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user is None or not user.check_password(password):
         return jsonify({"message": "Invalid credentials"}), 401
+    
 
-    return jsonify({"message": "Login successful", "user_id": user.id}), 200
+    webtoken  = jwt.encode({'public_id': user.id}, os.getenv("JWT_KEY"), algorithm="HS256") 
+
+
+    return jsonify({"message": "Login successful", "user_id": user.id, "webtoken" : webtoken}), 200
 
 #Token Functions and Routes
 def derive_key_and_iv(key_str, iv_str):
-    """
-    Derive key and IV using SHA256 for key and MD5 for IV (matching Node.js implementation)
-    """
+
     key = hashlib.sha256(key_str.encode('utf-8')).digest()  # 32 bytes
     iv = hashlib.md5(iv_str.encode('utf-8')).digest()       # 16 bytes
     return key, iv
 
 def encrypt(plaintext, key_str, iv_str):
-    """
-    Encrypt plaintext using AES-256-CBC (matching Node.js crypto implementation)
-    """
+
     key, iv = derive_key_and_iv(key_str, iv_str)
     
     # Pad plaintext to be multiple of 16 bytes (AES block size)
@@ -115,9 +116,7 @@ def encrypt(plaintext, key_str, iv_str):
     return base64.b64encode(ciphertext).decode('utf-8')
 
 def decrypt(ciphertext_b64, key_str, iv_str):
-    """
-    Decrypt base64 encoded ciphertext using AES-256-CBC
-    """
+
     key, iv = derive_key_and_iv(key_str, iv_str)
     
     ciphertext = base64.b64decode(ciphertext_b64)
@@ -133,9 +132,7 @@ def decrypt(ciphertext_b64, key_str, iv_str):
     return plaintext.decode('utf-8')
 
 def create_hash(key, data):
-    """
-    Create HMAC-SHA256 hash
-    """
+
     key_buff = key.encode('utf-8') if isinstance(key, str) else key
     data_buff = data.encode('utf-8') if isinstance(data, str) else data
     
@@ -389,7 +386,7 @@ def getResults():
     print(random_string)
 
     return jsonify({'msg' : random_string})
-    pass
+    
 
 # Helper function to clean up files (if needed separately)
 @app.route('/cleanup/<userid>', methods=['DELETE'])

@@ -35,10 +35,18 @@ function UserAuth() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+
     try {
       let res;
       if (isLogin) {
         res = await UserLogin({ email: form.email, password: form.password });
+        console.log(res);
+        
+       
+       console.log("Hey");     
+       sessionStorage.setItem("user", JSON.stringify(res.webtoken)) 
+        
       } else {
         res = await UserRegistration(form);
       }
