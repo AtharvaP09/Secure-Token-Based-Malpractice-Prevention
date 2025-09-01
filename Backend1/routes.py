@@ -93,7 +93,6 @@ def login():
 
     return jsonify({"message": "Login successful", "user_id": user.id, "webtoken" : webtoken}), 200
 
-#Token Functions and Routes
 def derive_key_and_iv(key_str, iv_str):
 
     key = hashlib.sha256(key_str.encode('utf-8')).digest()  # 32 bytes
@@ -386,6 +385,15 @@ def getResults():
     print(random_string)
 
     return jsonify({'msg' : random_string})
+
+
+@app.route('/createroom', methods = ['POST'])
+def handleRoom():
+    data = request.get_json()
+
+    
+
+    return jsonify({'data' : data})
     
 
 # Helper function to clean up files (if needed separately)
