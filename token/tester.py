@@ -2,6 +2,8 @@ import json
 import hashlib
 import hmac
 import base64
+import time
+from datetime import datetime
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
@@ -29,12 +31,18 @@ name = "John"
 roomid = "12345678"
 userid = "19276gz2ed"
 ceasar = 'you dont have the cards'
+starttime = 1756742460
+duration = 60
+
+
 
 data = {
     "name": name,
     "roomid": roomid,
     "userid": userid,
-    "subs" : ceasar
+    "subs" : ceasar,
+    "starttime" : starttime, 
+    "duration" : duration 
 }
 
 keystring = "hackathon25"

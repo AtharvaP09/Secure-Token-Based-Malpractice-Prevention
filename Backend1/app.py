@@ -21,8 +21,8 @@ con = mysql.connector.connect(
 cursor1 = con.cursor()
 cursor1.execute("""CREATE TABLE IF NOT EXISTS rooms (
     roomid VARCHAR(200) NOT NULL PRIMARY KEY,
-    start TIME NULL,
-    end INT NULL,
+    starttime FLOAT NULL,
+    duration INT NULL,
     creator VARCHAR(100) NULL,
     restricted json
 );""")

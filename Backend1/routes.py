@@ -148,7 +148,7 @@ def gettoken_handler():
         userid = data.get('userid')
         
         if not all([roomid, name, userid]):
-            return jsonify({'error': 'Missing required fields: roomid, name, userid'}), 400
+            return jsonify({'error': 'Missing required fields: roomid, name, userid'}), 400  
         
         keystring = "hackathon25"
         key = keystring.encode('utf-8')
