@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import API from "../api";
+import { useNavigate } from "react-router-dom";
 
 function UserAuth() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState("");
-
-
+  const navigate = useNavigate();
 
   const UserRegistration = async (userData) => {
     try {
@@ -17,7 +17,6 @@ function UserAuth() {
     }
   };
 
-
   const UserLogin = async (userData) => {
     try {
       const res = await API.post("/UserLogin", userData);
@@ -27,26 +26,26 @@ function UserAuth() {
     }
   };
 
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
 
     try {
       let res;
       if (isLogin) {
         res = await UserLogin({ email: form.email, password: form.password });
-        console.log(res);
-        
-       
-       console.log("Hey");     
-       sessionStorage.setItem("user", JSON.stringify(res.webtoken)) 
-        
+        console.log("Login Response:", res);
+
+        // ✅ Save token and username in session storage
+        sessionStorage.setItem("token", JSON.stringify(res.webtoken));
+        sessionStorage.setItem("username", res.username);  
+        sessionStorage.setItem("user_id", res.user_id);    
+
+        // Redirect to dashboard
+        navigate("/dashboard");
       } else {
         res = await UserRegistration(form);
       }

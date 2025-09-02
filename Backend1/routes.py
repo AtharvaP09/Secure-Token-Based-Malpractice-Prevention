@@ -86,12 +86,19 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user is None or not user.check_password(password):
         return jsonify({"message": "Invalid credentials"}), 401
-    
 
-    webtoken  = jwt.encode({'public_id': user.id}, os.getenv("JWT_KEY"), algorithm="HS256") 
+    # Generate JWT token
+    webtoken = jwt.encode(
+        {"public_id": user.id}, os.getenv("JWT_KEY"), algorithm="HS256"
+    )
 
-
-    return jsonify({"message": "Login successful", "user_id": user.id, "webtoken" : webtoken}), 200
+    # Return token, user ID, and username
+    return jsonify({
+        "message": "Login successful",
+        "user_id": user.id,
+        "username": user.username,  
+        "webtoken": webtoken
+    }), 200
 
 def derive_key_and_iv(key_str, iv_str):
 
