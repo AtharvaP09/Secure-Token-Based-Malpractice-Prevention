@@ -1,0 +1,51 @@
+.room-container {
+  padding: 24px;
+  max-width: 600px;
+  margin: auto;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.room-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.room-creator {
+  margin-bottom: 24px;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.users-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.users-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 24px;
+  color: #1f2937;
+}
+
+.leave-btn {
+  background-color: #ef4444; /* Red */
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.leave-btn:hover {
+  background-color: #dc2626; /* Darker red */
+}
