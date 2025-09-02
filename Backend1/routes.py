@@ -100,7 +100,6 @@ def login():
         "webtoken": webtoken
     }), 200
 
-#Token Functions and Routes
 def derive_key_and_iv(key_str, iv_str):
 
     key = hashlib.sha256(key_str.encode('utf-8')).digest()  # 32 bytes
@@ -156,7 +155,7 @@ def gettoken_handler():
         userid = data.get('userid')
         
         if not all([roomid, name, userid]):
-            return jsonify({'error': 'Missing required fields: roomid, name, userid'}), 400
+            return jsonify({'error': 'Missing required fields: roomid, name, userid'}), 400  
         
         keystring = "hackathon25"
         key = keystring.encode('utf-8')
@@ -393,6 +392,15 @@ def getResults():
     print(random_string)
 
     return jsonify({'msg' : random_string})
+
+
+@app.route('/createroom', methods = ['POST'])
+def handleRoom():
+    data = request.get_json()
+
+    
+
+    return jsonify({'data' : data})
     
 
 # Helper function to clean up files (if needed separately)

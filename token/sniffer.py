@@ -127,7 +127,10 @@ domains = []
 
 dData = json.loads(decrypted_data)
 subs = dData['subs']
-# print(subs)
+starttime = float(dData['starttime'])
+duration = dData['duration']
+print(starttime, time.time())
+
 
 emap , dmap = generate_keySubs(subs)
 
@@ -175,6 +178,11 @@ def combined_sniffer(pkt):
     elif pkt.haslayer(TLSClientHello):
         https_sniffer(pkt)
 
+#let the program sleep until start time occurs
+if time.time() < starttime :
+    waitingtime = starttime - time.time()
+    print('sleeping for '+ str(waitingtime) + ' seconds...')
+    time.sleep(waitingtime)
 
 inter = setInterval(3, checkTime)
 
@@ -184,6 +192,7 @@ writeToFile('meta', str(decrypted_data))
 print("Sniffing HTTP/HTTPS traffic... Press Ctrl+C to stop.")
 
 writeToFile('status', 'START')
+writeToFile('checkpoint', str(time.time()))
 
 root = tk.Tk()
 
