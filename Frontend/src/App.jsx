@@ -10,13 +10,27 @@ import Room from './pages/room';
 function App() {
   return (
     <>
-    <Routes>
-      <Route path= {'/'} element={<h3>Secure Token Based Malpractice Prevention , Hello World!!</h3>}/>
-      <Route path= {'/auth'} element={<UserAuth />}/>
-      <Route path= {'/gettoken'} element={<GetToken/>}/>
-      <Route path='/dashboard' element={<Dashboard/>}/>
-
-    </Routes>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth" element={<UserAuth />} />
+        <Route path="/gettoken" element={<GetToken />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/room/:roomId"
+          element={
+            <ProtectedRoute>
+              <Room />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </>
   )
 }
