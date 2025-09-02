@@ -44,6 +44,7 @@ function CreateRoom() {
       <h1>Create Room</h1>
       <input type="date" ref={dateref} />
       <input type="time" ref={timeref} />
+      <input type="number" />
       <button onClick={createRoom}>Create Room</button>
     </div>
   );
