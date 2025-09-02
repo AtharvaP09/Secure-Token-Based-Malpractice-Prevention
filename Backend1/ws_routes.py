@@ -9,7 +9,7 @@ def handle_create_room(data):
     password = data.get("password")
     creator = data.get("creator")  # username from frontend
 
-    # Save room in MySQL (start_time auto set by DB)
+    # Save room in MySQL -- > start time is set by MySQL
     cursor = con.cursor()
     cursor.execute("""
         INSERT INTO rooms (room_id, password, creator)
@@ -22,7 +22,7 @@ def handle_create_room(data):
     if room_id not in active_users:
         active_users[room_id] = []
     if creator not in active_users[room_id]:
-        active_users[room_id].append(creator)
+        active_users[room_id].append(creator) #username(frontend)-->creator(backened)--.creator(frontend)
     join_room(room_id)
 
     # Confirm room creation to creator
@@ -45,7 +45,7 @@ def handle_join(data):
         emit("error", {"message": "Room does not exist"})
         return
 
-    # ✅ Safe password check
+    # Safe password check
     if (room["password"] or "").strip() != (password or "").strip():
         emit("error", {"message": "Incorrect password"})
         return
@@ -84,6 +84,7 @@ def handle_leave(data):
         active_users[room_id].remove(username)
 
     # If no users remain, update end_time and delete room
+    # Planning to keep it if no creator remains......
     if room_id in active_users and len(active_users[room_id]) == 0:
         cursor = con.cursor()
         cursor.execute(

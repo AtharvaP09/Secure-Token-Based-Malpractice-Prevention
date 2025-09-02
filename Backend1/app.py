@@ -21,6 +21,9 @@ con = mysql.connector.connect(
 cursor1 = con.cursor()
 
 # Create 'rooms' table with proper columns if not exists
+# only room_id , password , creator come from frontend
+# start_time is set by MySQL and end_time is set when room is deleted
+#Later can add status and room_name
 cursor1.execute("""
 CREATE TABLE IF NOT EXISTS rooms (
     room_id VARCHAR(200) NOT NULL PRIMARY KEY,
@@ -31,6 +34,8 @@ CREATE TABLE IF NOT EXISTS rooms (
 );
 """)
 
+# Will add this to customize token linked to a room........
+#We can add user_id to link a specific token_id to user_id
 # Create 'tokenfunction' table
 # cursor1.execute("""
 # CREATE TABLE IF NOT EXISTS tokenfunction (
@@ -58,12 +63,12 @@ db.init_app(app)
 # Setup SocketIO
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Memory store for active users (optional, for WebSocket tracking)
+# Memory store for active users (optional, for WebSocket tracking)--> This is a 2D dictionary
 active_users = {}
 
 # Import routes after app configuration
-from routes import *
-from ws_routes import *
+from routes import * # Import regular routes
+from ws_routes import * # Import WebSocket routes
 
 if __name__ == '__main__':
     with app.app_context():
