@@ -11,7 +11,7 @@ function Dashboard() {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
-  // ✅ Get logged-in username from sessionStorage
+  // Get logged-in username from sessionStorage
   const username = sessionStorage.getItem("username") || "Guest";
 
   useEffect(() => {
@@ -63,12 +63,20 @@ function Dashboard() {
     };
   }, [navigate, username]);
 
-  const handleCreate = ({ roomId, password }) => {
+  const handleCreate = ({ roomId, password, restricted, startTime }) => {
+
+    console.log(restricted);
+    console.log(startTime);
+    
+    
+
     socket.emit("create_room", {
       roomId,
       password,
       creator: username,
-      startTime: new Date().toISOString(),
+      restricted,
+      startTime,
+      // startTime: new Date().toISOString(),
     });
   };
 

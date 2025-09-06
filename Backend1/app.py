@@ -28,8 +28,9 @@ cursor1.execute("""
 CREATE TABLE IF NOT EXISTS rooms (
     room_id VARCHAR(200) NOT NULL PRIMARY KEY,
     password VARCHAR(200) NOT NULL,
-    start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    end_time TIMESTAMP NULL,
+    start_time int,
+    duration int,
+    restricted json,
     creator VARCHAR(100) NOT NULL
 );
 """)

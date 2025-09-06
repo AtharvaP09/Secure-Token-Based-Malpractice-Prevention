@@ -1,6 +1,7 @@
 from flask_socketio import join_room, leave_room, emit
 from app import socketio, con, active_users, request
 from datetime import datetime
+import json
 
 
 @socketio.on("create_room")
@@ -8,13 +9,17 @@ def handle_create_room(data):
     room_id = data.get("roomId")
     password = data.get("password")
     creator = data.get("creator")  # username from frontend
+    starttime = data.get("startTime")
+    restricted = data.get("restricted")
+
+    print(starttime, json.dumps(restricted))
 
     # Save room in MySQL -- > start time is set by MySQL
     cursor = con.cursor()
     cursor.execute("""
-        INSERT INTO rooms (room_id, password, creator)
-        VALUES (%s, %s, %s)
-    """, (room_id, password, creator))
+        INSERT INTO rooms (room_id, password, creator, start_time, restricted)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (room_id, password, creator, starttime, json.dumps(restricted)))
     con.commit()
     cursor.close()
 
@@ -86,13 +91,13 @@ def handle_leave(data):
     # If no users remain, update end_time and delete room
     # Planning to keep it if no creator remains......
     if room_id in active_users and len(active_users[room_id]) == 0:
-        cursor = con.cursor()
-        cursor.execute(
-            "UPDATE rooms SET end_time=%s WHERE room_id=%s",
-            (datetime.utcnow(), room_id)
-        )
-        con.commit()
-        cursor.close()
+        # cursor = con.cursor()
+        # cursor.execute(
+        #     "UPDATE rooms SET end_time=%s WHERE room_id=%s",
+        #     (datetime.utcnow(), room_id)
+        # )
+        # con.commit()
+        # cursor.close()
         del active_users[room_id]
     else:
         emit("user_list", {"roomId": room_id, "users": active_users[room_id]}, room=room_id)
