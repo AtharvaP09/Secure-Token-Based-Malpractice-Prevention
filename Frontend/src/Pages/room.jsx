@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./Styles/Room.css";
+import GetToken from "./GetToken";
+import Upload from "./Upload";
 
 const socket = io("http://localhost:5643"); // backend Flask-SocketIO server
 
@@ -79,9 +81,15 @@ function Room() {
         ))}
       </ul>
 
+      <GetToken roomid = {roomId}/>
+
       <button className="leave-btn" onClick={handleLeave}>
         Leave Room
       </button>
+
+      <br />
+      <br />
+      <Upload/>
     </div>
   );
 }

@@ -1,19 +1,31 @@
 import React, { useState } from 'react'
 import Upload from './Upload';
 
-function GetToken() {
-  const [userid, setuserID] = useState()
+function GetToken({roomid}) {
+  const [userid, setuserID] = useState(sessionStorage.getItem('user_id'))
+  const [username, setUName] = useState(sessionStorage.getItem('username'))
 
     async function getToken() {
+
+      if(!userid || !username){
+        return alert("Pls log in")
+      }
+
+      if (!roomid) {
+        return alert("No room id")
+      }
+
+      console.log(roomid);
         
         const response = await fetch('http://localhost:5643/gettoken', {
           method : 'POST', 
           headers : {
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'application/json', 
+            'Authorization' : 'Bearer '+sessionStorage.getItem('token')
           }, 
           body : JSON.stringify({
-            roomid : 'ILUBABY', 
-            name : userid, 
+            roomid : roomid, 
+            name : username, 
             userid : userid
           })
         })
@@ -24,7 +36,7 @@ function GetToken() {
 const url = window.URL.createObjectURL(blob);
 const a = document.createElement('a');
 a.href = url;
-a.download = `${userid}.zip`; // <-- filename shown to user
+a.download = `${username.toLowerCase() + String(userid)}.zip`; // <-- filename shown to user
 document.body.appendChild(a);
 a.click();
 
@@ -37,9 +49,7 @@ window.URL.revokeObjectURL(url);
 
   return (
     <div>
-      <input type="text" onChange={(e)=>setuserID(e.target.value)} />
         <button onClick={()=>getToken()}>get Token</button>
-        <Upload/>
     </div>
   )
 }

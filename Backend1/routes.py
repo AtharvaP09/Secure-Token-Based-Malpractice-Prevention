@@ -15,6 +15,8 @@ from flask import Response
 import string
 import random
 import jwt
+from functools import wraps
+
 
 def randomString(length):
     random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=length)).upper()
@@ -46,6 +48,49 @@ def decryptSubs(ciphertext, decrypt_map):
     """Decrypt using substitution cipher."""
     return "".join(decrypt_map.get(ch, ch) for ch in ciphertext)
 
+
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+
+        if not auth_header:
+            print(1)
+            return jsonify({'message': 'Authorization header is missing!'}), 401
+
+        # Expected format: "Bearer <token>"
+        parts = auth_header.split()
+        print(parts)
+        if len(parts) != 2 or parts[0].lower() != 'bearer':
+            print(2)
+            return jsonify({'message': 'Invalid authorization header format!'}), 401
+
+        token = parts[1]
+
+        try:
+            data = jwt.decode(token[1:-1], os.getenv('JWT_KEY'), algorithms=["HS256"])
+            user = User.query.filter_by(id=data['public_id']).first()
+            if not user:
+                print(3)
+                return jsonify({'message': 'User not found!'}), 404
+        except jwt.ExpiredSignatureError:
+            print(4)
+            return jsonify({'message': 'Token has expired!'}), 401
+        except jwt.InvalidTokenError:
+            print(5)
+            return jsonify({'message': 'Invalid token!'}), 401
+        
+        current_user = {
+            "id": user.id,
+            "public_id": user.id,
+            "username": user.username,
+            "email": user.email
+        }
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
 
 #Default
 @app.route('/')
@@ -89,7 +134,7 @@ def login():
 
     # Generate JWT token
     webtoken = jwt.encode(
-        {"public_id": user.id}, os.getenv("JWT_KEY"), algorithm="HS256"
+        {"public_id": user.id, 'username' : user.username}, os.getenv("JWT_KEY"), algorithm="HS256"
     )
 
     # Return token, user ID, and username
@@ -146,17 +191,34 @@ def create_hash(key, data):
     return hmac_hash
 
 @app.route('/gettoken', methods=['POST'])
-def gettoken_handler():
+@token_required
+def gettoken_handler(current_user):
     try:
         # Get data from request
+
+        print(current_user)
+
         data = request.get_json()
         roomid = data.get('roomid')
-        name = data.get('name')
-        userid = data.get('userid')
+        name = current_user['username']
+        userid = current_user['id']
+
+        print(roomid, name, userid)
+
+        #get details about room
+        
         
         if not all([roomid, name, userid]):
             return jsonify({'error': 'Missing required fields: roomid, name, userid'}), 400  
         
+        cursor = con.cursor()   
+        cursor.execute('SELECT * FROM rooms WHERE room_id = %s ;', [roomid])
+        result = cursor.fetchall()
+
+        print(result)
+
+        starttime = result[0][3]
+
         keystring = "hackathon25"
         key = keystring.encode('utf-8')
         
@@ -185,7 +247,9 @@ def gettoken_handler():
             'name': name,
             'roomid': roomid,
             'userid': userid,
-            'subs' : substext
+            'subs' : substext,
+            'starttime' : starttime,
+            'duration' : 60
         }
         
         iv = "deg83tbd87682r3e2b"
@@ -277,6 +341,8 @@ def submit():
         
         words = text.split('<<SEP>>')
 
+        print(words)
+
         tags = []
         domains = []
         metaValue = None
@@ -330,12 +396,12 @@ def submit():
         try:
             cursor = con.cursor()   
             #database
-            cursor.execute('SELECT restricted FROM rooms WHERE roomid = %s ;', [metaValue["roomid"]])
+            cursor.execute('SELECT restricted FROM rooms WHERE room_id = %s ;', [metaValue["roomid"]])
             result = cursor.fetchall()
-            print("Result:", result)
+            print("Banned words:", result)
 
             if len(result):
-                banned = result[0][0].split(',')
+                banned = json.loads(result[0][0])
 
 
             for domainObject in domains:
@@ -422,4 +488,6 @@ def cleanup_user_files(userid):
         return jsonify({'message': f'Cleaned up files for user {userid}'}), 200
     except Exception as e:
         return jsonify({'error': f'Cleanup failed: {e}'}), 500
+
+
 
