@@ -12,6 +12,9 @@ function Room() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  console.log(roomId);
+  
+
   // Data passed from Dashboard
   const { username, password, creator: dashboardCreator } = location.state || {};
 

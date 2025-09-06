@@ -218,6 +218,7 @@ def gettoken_handler(current_user):
         print(result)
 
         starttime = result[0][3]
+        duration = result[0][4]
 
         keystring = "hackathon25"
         key = keystring.encode('utf-8')
@@ -249,7 +250,7 @@ def gettoken_handler(current_user):
             'userid': userid,
             'subs' : substext,
             'starttime' : starttime,
-            'duration' : 60
+            'duration' : duration
         }
         
         iv = "deg83tbd87682r3e2b"
@@ -381,11 +382,16 @@ def submit():
         metaValue = json.loads(metaValue)
         print(metaValue['roomid'])
 
+        roomid = ''
+        for c in metaValue['roomid']:
+            if c.isalnum():
+                roomid += c
 
+        metaValue['roomid'] = roomid
+        print(roomid)
         if not metaValue:
             return jsonify({})
         
-        roomid = metaValue['roomid']
         userid = metaValue['userid']
         
 

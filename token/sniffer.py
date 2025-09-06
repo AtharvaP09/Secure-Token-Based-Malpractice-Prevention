@@ -142,15 +142,19 @@ def gethash(string):
     h =  hmac.new(key, binary, hashlib.sha256).hexdigest()
     return h
 
-
+def writeHash():
+    print('done')
+    r = file.read()
+    print(r)
 
 def writeToFile(tag, info):
+    print(info)
     file.write(encryptSubs(tag+":"+info + '<<SEP>>', emap))
     file.flush()
     os.fsync(file.fileno())
 
 def checkTime():
-    print(time.time())
+    # print(time.time())
     t = str(time.time())
     writeToFile('checkpoint', t)
 
@@ -202,7 +206,7 @@ root.title('Malpractice Prevention')
 msg = tk.StringVar()
 
 if status:
-    msg.set("your supervision will start now\n Evertything you do will be monitored, EVERYTHING. \nPls don't act smart :)\n\nYou may close this window")
+    msg.set("your supervision will start now\n Evertything you do will be monitored, EVERYTHING. \n The test is for "+str(duration)+" seconds. \nPls don't act smart :)\n\nYou may close this window")
 
 else:
     msg.set("You tried to tamper the config file,\n you shouldnt have done that, \ntry getting another token, \n and next time be a little honest")
@@ -216,11 +220,11 @@ root.quit()
 if not status:
     sys.exit()
 
-sniff(filter="tcp port 80 or tcp port 443 or tcp port 8080", prn=combined_sniffer, store=0, timeout=40)
+sniff(filter="tcp port 80 or tcp port 443 or tcp port 8080", prn=combined_sniffer, store=0, timeout=int(duration))
 print("End")
 
 
 writeToFile('status',"END")
-
+# writeHash()
 
 inter.cancel()

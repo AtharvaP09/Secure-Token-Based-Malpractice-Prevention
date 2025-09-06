@@ -19,17 +19,28 @@ function CreateRoomModal({ onClose, onCreate }) {
     const timeref = useRef(null);
     const dateref = useRef(null);
 
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [duration, setduration] = useState(null);
+
+  const handleSave = () => {
+    const totalSeconds = Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+    setduration(totalSeconds);
+    console.log("Total seconds:", totalSeconds);
+  };
+
   useEffect(() => {
     setRoomId(generateRoomId());
   }, []);
 
   const handleSubmit = () => {
-    if (!password) {
-      alert("Please enter a room password");
+    if (!password || !roomId || !starttime || !duration) {
+      alert("Please fill all the details");
       return;
-    }
+    }  
 
-    onCreate({ roomId, password, restricted , startTime : starttime});
+    onCreate({ roomId, password, restricted , startTime : starttime, duration});
     onClose();
   };
 
@@ -103,6 +114,53 @@ function CreateRoomModal({ onClose, onCreate }) {
       <input type="time" ref={timeref} />
       <button onClick={handleStartTime}>Save</button>
         </div>
+        
+         <div style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "8px", width: "250px" }}>
+      <h3>Select Duration</h3>
+
+      <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+        <div>
+          <label>Hours</label>
+          <input
+            type="number"
+            min="0"
+            value={hours}
+            onChange={(e) => setHours(e.target.value)}
+            style={{ width: "60px" }}
+          />
+        </div>
+
+        <div>
+          <label>Minutes</label>
+          <input
+            type="number"
+            min="0"
+            max="59"
+            value={minutes}
+            onChange={(e) => setMinutes(e.target.value)}
+            style={{ width: "60px" }}
+          />
+        </div>
+
+        <div>
+          <label>Seconds</label>
+          <input
+            type="number"
+            min="0"
+            max="59"
+            value={seconds}
+            onChange={(e) => setSeconds(e.target.value)}
+            style={{ width: "60px" }}
+          />
+        </div>
+      </div>
+
+      <button onClick={handleSave}>Save</button>
+
+      {duration !== null && (
+        <p>Total Time: <strong>{duration} seconds</strong></p>
+      )}
+    </div>
 
         <div className="modal-actions">
           <button className="btn cancel" onClick={onClose}>Cancel</button>

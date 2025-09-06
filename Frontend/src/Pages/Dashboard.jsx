@@ -63,7 +63,7 @@ function Dashboard() {
     };
   }, [navigate, username]);
 
-  const handleCreate = ({ roomId, password, restricted, startTime }) => {
+  const handleCreate = ({ roomId, password, restricted, startTime, duration }) => {
 
     console.log(restricted);
     console.log(startTime);
@@ -76,6 +76,7 @@ function Dashboard() {
       creator: username,
       restricted,
       startTime,
+      duration
       // startTime: new Date().toISOString(),
     });
   };

@@ -28,8 +28,8 @@ def encrypt(data, key, iv):
 
 # Input data
 name = "John"
-roomid = "12345678"
-userid = "19276gz2ed"
+roomid = "FVGOZ0OM"
+userid = 23
 ceasar = 'you dont have the cards'
 starttime = 1756742460
 duration = 60

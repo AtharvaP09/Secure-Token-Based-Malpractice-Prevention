@@ -11,15 +11,16 @@ def handle_create_room(data):
     creator = data.get("creator")  # username from frontend
     starttime = data.get("startTime")
     restricted = data.get("restricted")
+    duration = data.get("duration")
 
     print(starttime, json.dumps(restricted))
 
     # Save room in MySQL -- > start time is set by MySQL
     cursor = con.cursor()
     cursor.execute("""
-        INSERT INTO rooms (room_id, password, creator, start_time, restricted)
-        VALUES (%s, %s, %s, %s, %s)
-    """, (room_id, password, creator, starttime, json.dumps(restricted)))
+        INSERT INTO rooms (room_id, password, creator, start_time, restricted, duration)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (room_id, password, creator, starttime, json.dumps(restricted), duration))
     con.commit()
     cursor.close()
 
