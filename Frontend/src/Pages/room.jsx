@@ -84,15 +84,23 @@ function Room() {
         ))}
       </ul>
 
+        <h1>Get token</h1>
       <GetToken roomid = {roomId}/>
+      <br />
+
+      <Upload/>
+
+      <br />
+      <br />
+
+        <div>
+
+      <button onClick={()=>navigate('/submissions/'+ roomId)}>View Submissions</button>
 
       <button className="leave-btn" onClick={handleLeave}>
         Leave Room
       </button>
-
-      <br />
-      <br />
-      <Upload/>
+        </div>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Landing from './pages/Landing'; 
 import ProtectedRoute from './ProtectedRoute';
 import Room from './pages/room';  
+import Submissions from './pages/Submissions';
 
 function App() {
   return (
@@ -30,6 +31,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+      
+      <Route path='/submissions/:roomid' element={<ProtectedRoute>
+        <Submissions/>
+      </ProtectedRoute>}/>
+          
       </Routes>
     </>
   )

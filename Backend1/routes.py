@@ -261,9 +261,7 @@ def gettoken_handler(current_user):
         # Create HMAC
         hmac_input = iv.encode('utf-8') + ciphertext.encode('utf-8')
         hmac_hash = hmac.new(key, hmac_input, hashlib.sha256).hexdigest()
-
-       
-        
+         
         # Create config
         config = {
             'iv': iv,
@@ -452,6 +450,15 @@ def submit():
 @app.route('/results', methods = ['POST'])
 def getResults():
     #get roomid and creator(userid)
+    data = request.get_json()
+    roomid = data.get('roomid')
+    print(roomid)
+
+    cursor = con.cursor(dictionary = True)
+
+    cursor.execute("select * from submissions where roomid = %s ;", [roomid])
+
+    result = cursor.fetchall()
 
     #using userid, check if creator is authentic
 
@@ -459,11 +466,7 @@ def getResults():
 
     #send results to user
 
-    length = 8
-    random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=length)).upper()
-    print(random_string)
-
-    return jsonify({'msg' : random_string})
+    return jsonify(result)
 
 
 @app.route('/createroom', methods = ['POST'])
