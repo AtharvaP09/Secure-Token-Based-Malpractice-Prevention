@@ -23,7 +23,7 @@ def randomString(length):
     return random_string
 
 # Character set: all printable ASCII
-CHARS = string.printable  
+CHARS = string.ascii_letters + string.digits + string.punctuation + " "  
 
 def generate_key(seed=None):
     """Generate encryption and decryption maps."""

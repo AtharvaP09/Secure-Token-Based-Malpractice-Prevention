@@ -57,7 +57,8 @@ def decrypt(ciphertext_b64: str, key_str: str, iv_str: str) -> str:
     return plaintext.decode("utf-8")
 
 
-CHARS = string.printable
+CHARS = string.ascii_letters + string.digits + string.punctuation + " "
+
 
 def generate_keySubs(seed=None):
     chars = list(CHARS)
@@ -206,7 +207,7 @@ root.title('Malpractice Prevention')
 msg = tk.StringVar()
 
 if status:
-    msg.set("your supervision will start now\n Evertything you do will be monitored, EVERYTHING. \n The test is for "+str(duration)+" seconds. \nPls don't act smart :)\n\nYou may close this window")
+    msg.set("your supervision will start now\n Everything you do will be monitored, EVERYTHING. \n The test is for "+str(duration)+" seconds. \nPls don't act smart :)\n\nYou may close this window")
 
 else:
     msg.set("You tried to tamper the config file,\n you shouldnt have done that, \ntry getting another token, \n and next time be a little honest")

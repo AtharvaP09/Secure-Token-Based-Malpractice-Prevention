@@ -30,7 +30,7 @@ def encrypt(data, key, iv):
 name = "John"
 roomid = "FVGOZ0OM"
 userid = 23
-ceasar = 'you dont have the cards'
+ceasar = 'birds'
 starttime = 1756742460
 duration = 60
 

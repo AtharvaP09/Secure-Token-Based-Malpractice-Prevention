@@ -4,27 +4,38 @@ export default function Upload(){
 
     const [file, setFile] = useState(null)
 
-    async function submit() {
-        
-        if (!file) {
-            return alert('Nothing uploaded')
-        }
+async function submit() {
+    if (!file) {
+        return alert('Nothing uploaded');
+    }
 
-        const formdata = new FormData()
-
-        formdata.append('ledger', file)
+    try {
+        const formdata = new FormData();
+        formdata.append('ledger', file);
 
         const response = await fetch('http://localhost:5643/submit', {
-            method : 'POST', 
-            body : formdata
+            method: 'POST',
+            body: formdata
         });
-        
 
-        const data = await response.json()
+        if (!response.ok) {
+            return alert('Server error: ' + response.status);
+        }
 
+        const data = await response.json();
         console.log(data);
-        
+
+        if (data.status && data.status.toLowerCase() === 'success') {
+            alert(' Upload successful!');
+        } else {
+            alert(' Upload failed: ' + (data.message || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error(error);
+        alert(' Network error: ' + error.message);
     }
+}
+
 
     return(<>
     <h1>Upload here</h1>
