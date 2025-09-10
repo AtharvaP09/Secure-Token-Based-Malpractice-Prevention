@@ -391,6 +391,7 @@ def submit():
             return jsonify({})
         
         userid = metaValue['userid']
+        name = metaValue['name']
         
 
         #get restricted words
@@ -421,7 +422,7 @@ def submit():
 
             
 
-            cursor.execute('insert into submissions(roomid, userid, cheats, time) values( %s, %s , %s, sysdate());', [roomid, userid, json.dumps(cheats)])
+            cursor.execute('insert into submissions(roomid, userid, cheats, time, start, end, name) values( %s, %s , %s, now(), %s, %s, %s);', [roomid, userid, json.dumps(cheats), start, end, name])
             con.commit()
 
             print(cheats)

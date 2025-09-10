@@ -1,0 +1,75 @@
+/* General container */
+.submissions-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f9fafc;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Title */
+.title {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+/* Results list layout */
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* User card */
+.user-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* User ID heading */
+.user-id {
+  font-size: 1.4rem;
+  color: #1e293b;
+  margin-bottom: 15px;
+}
+
+/* Cheats list */
+.cheats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Each cheat item */
+.cheat-item {
+  display: flex;
+  justify-content: space-between;
+  background: #f1f5f9;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.cheat-item .domain {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.cheat-item .time {
+  font-style: italic;
+  color: #334155;
+}

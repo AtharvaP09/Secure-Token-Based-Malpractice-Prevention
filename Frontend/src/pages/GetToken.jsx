@@ -36,7 +36,7 @@ function GetToken({roomid}) {
 const url = window.URL.createObjectURL(blob);
 const a = document.createElement('a');
 a.href = url;
-a.download = `${username.toLowerCase() + String(userid)}.zip`; // <-- filename shown to user
+a.download = `${username.toLowerCase() + roomid + String(userid)}.zip`; // <-- filename shown to user
 document.body.appendChild(a);
 a.click();
 
