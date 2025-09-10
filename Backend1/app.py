@@ -25,13 +25,27 @@ cursor1 = con.cursor()
 # start_time is set by MySQL and end_time is set when room is deleted
 #Later can add status and room_name
 cursor1.execute("""
-CREATE TABLE IF NOT EXISTS rooms (
+CREATE TABLE IF NOT EXISTS rooms(
     room_id VARCHAR(200) NOT NULL PRIMARY KEY,
     password VARCHAR(200) NOT NULL,
-    start_time int,
-    duration int,
-    restricted json,
-    creator VARCHAR(100) NOT NULL
+    creator VARCHAR(100) NOT NULL,
+    start_time INT,
+    duration INT,
+    restricted JSON
+);
+
+""")
+
+cursor1.execute("""
+CREATE TABLE IF NOT EXISTS submissions (
+    subid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    roomid VARCHAR(200),
+    userid VARCHAR(200),
+    name VARCHAR(100),
+    cheats JSON,
+    time DATETIME,
+    start TINYINT(1),
+    end TINYINT(1)
 );
 """)
 
