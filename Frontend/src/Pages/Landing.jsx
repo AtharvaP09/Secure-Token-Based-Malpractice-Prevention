@@ -18,8 +18,9 @@ function Landing() {
 
       <header>
         <nav className="container">
-          <div className="logo">🛡 ExamGuard</div>
+          <div className="logo">🛡 DeepBlue</div>
           <ul className="nav-links">
+            <li><a href="Dashboard">Dashboard</a></li>
             <li><a href="#features">Features</a></li>
             <li><a href="#how-it-works">How It Works</a></li>
             <li><a href="#contact">Contact</a></li>
