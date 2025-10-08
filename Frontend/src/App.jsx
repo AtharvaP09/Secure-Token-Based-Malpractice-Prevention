@@ -1,13 +1,14 @@
+// src/App.js
 import './App.css';
 import UserAuth from "./pages/UserAuth";
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import GetToken from './pages/GetToken';
-import Dashboard from './pages/Dashboard';
-import Landing from './pages/Landing';
+import GetToken from './Pages/GetToken';
+import PairDropDashboard from './Pages/PairDropDashboard'; // <-- new PairDrop dashboard
+import Landing from './Pages/Landing';
 import ProtectedRoute from './ProtectedRoute';
-import Room from './pages/room';
-import Submissions from './pages/Submissions';
+import PairDropRoom from './Pages/PairDropRoom'; // <-- new PairDrop room
+import Submissions from './Pages/Submissions';
 
 function App() {
   const location = useLocation();
@@ -41,7 +42,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <PairDropDashboard />
             </ProtectedRoute>
           }
         />
@@ -50,7 +51,7 @@ function App() {
           path="/room/:roomId"
           element={
             <ProtectedRoute>
-              <Room />
+              <PairDropRoom />
             </ProtectedRoute>
           }
         />

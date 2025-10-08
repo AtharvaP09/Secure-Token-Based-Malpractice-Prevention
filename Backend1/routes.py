@@ -69,7 +69,7 @@ def token_required(f):
         token = parts[1]
 
         try:
-            data = jwt.decode(token[1:-1], os.getenv('JWT_KEY'), algorithms=["HS256"])
+            data = jwt.decode(token, os.getenv('JWT_KEY'), algorithms=["HS256"])
             user = User.query.filter_by(id=data['public_id']).first()
             if not user:
                 print(3)
@@ -199,7 +199,7 @@ def gettoken_handler(current_user):
         print(current_user)
 
         data = request.get_json()
-        roomid = data.get('roomid')
+        roomid = data.get('roomId')
         name = current_user['username']
         userid = current_user['id']
 
