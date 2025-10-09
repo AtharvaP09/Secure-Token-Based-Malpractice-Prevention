@@ -49,6 +49,10 @@ CREATE TABLE IF NOT EXISTS submissions (
 );
 """)
 
+cursor1.execute("""
+create table if not exists users(userid int primary key auto_increment, username varchar(100) not null, email varchar(100) not null, passwordhash varchar(200) not null);
+""")
+
 # Will add this to customize token linked to a room........
 #We can add user_id to link a specific token_id to user_id
 # Create 'tokenfunction' table
@@ -65,6 +69,7 @@ CREATE TABLE IF NOT EXISTS submissions (
 # );
 # """)
 
+con.commit()
 cursor1.close()
 
 # Configure CORS

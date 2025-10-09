@@ -15,6 +15,16 @@ function CreateRoomModal({ onClose, onCreate }) {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const domains = [
+    "openai",
+    "gemini",
+    "copilot",
+    "claude",
+    "perplexity",
+    "huggingface",
+    "pi",
+    "blackbox",
+  ]
 
   useEffect(() => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -28,9 +38,18 @@ function CreateRoomModal({ onClose, onCreate }) {
   const addDomain = () => {
     const d = domain.trim();
     if (!d) return;
+
+    if (d == 'all') {
+      return addAllDomains()
+    }
+
     setRestricted((r) => [...r, d]);
     setDomain("");
   };
+
+  function addAllDomains() {
+    setRestricted(domains)
+  }
 
   const removeDomain = (idx) => setRestricted((r) => r.filter((_, i) => i !== idx));
 
@@ -77,17 +96,32 @@ function CreateRoomModal({ onClose, onCreate }) {
         </div>
 
         <div style={{ marginBottom: '12px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Restricted Domains (Optional)</div>
+          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Restricted Domains (Keywords) (Optional)</div>
           <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-            <input 
-              className="input" 
-              placeholder="e.g., google.com" 
-              value={domain} 
-              onChange={(e) => setDomain(e.target.value)} 
-              onKeyPress={(e) => e.key === 'Enter' && addDomain()}
-            />
-            <button className="pd-btn" onClick={addDomain}>Add</button>
-          </div>
+  <select 
+    className="input" 
+    placeholder="e.g., google, chatgpt" 
+    value={domain} 
+    onChange={(e) => setDomain(e.target.value)} 
+    onKeyPress={(e) => e.key === 'Enter' && addDomain()}
+  >
+    <option value="">Select AI website</option>
+    <option value="all">All AI Websites</option>
+    <option value="openai">ChatGPT (OpenAI)</option>
+    <option value="gemini">Gemini (Google)</option>
+    <option value="copilot">Copilot (Microsoft)</option>
+    <option value="claude">Claude (Anthropic)</option>
+    <option value="perplexity">Perplexity AI</option>
+    <option value="huggingface">Hugging Face</option>
+    <option value="pi">Pi AI</option>
+    <option value="blackbox">Blackbox AI</option>
+    <option value="codeium">Codeium</option>
+    <option value="replit">Replit</option>
+    <option value="notebooklm">NotebookLM</option>
+  </select>
+  <button className="pd-btn" onClick={addDomain}>Add</button>
+</div>
+
           {restricted.length > 0 && (
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {restricted.map((d, i) => (

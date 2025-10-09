@@ -4,6 +4,7 @@ from flask import request, jsonify
 import os
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
+from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import shutil
 import zipfile
@@ -66,7 +67,8 @@ def token_required(f):
             print(2)
             return jsonify({'message': 'Invalid authorization header format!'}), 401
 
-        token = parts[1]
+        token = parts[1].strip('"')
+
 
         try:
             data = jwt.decode(token, os.getenv('JWT_KEY'), algorithms=["HS256"])
@@ -110,12 +112,24 @@ def UserRegistration():
     email = data.get('email')
     password = data.get('password')
 
+    cursor = con.cursor()
+
+    cursor.execute("select * from users where email = %s", [email])
+    if len(cursor.fetchall()):
+        return jsonify({"message": "Email already registered"}), 400
+
     if User.query.filter_by(email=email).first():
         return jsonify({"message": "Email already registered"}), 400
 
     user = User(username=username, email=email)
     user.set_password(password)
 
+    hashed = generate_password_hash(password)
+
+    cursor.execute("insert into users(username, email, passwordhash) values( %s, %s, %s );", (username, email, hashed))
+    
+    cursor.close()
+    con.commit()
     db.session.add(user)
     db.session.commit()
 
@@ -131,6 +145,10 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user is None or not user.check_password(password):
         return jsonify({"message": "Invalid credentials"}), 401
+    
+    cursor = con.cursor(dictionary = True)
+
+    cursor.execute("select * from users where username ")
 
     # Generate JWT token
     webtoken = jwt.encode(
@@ -340,7 +358,7 @@ def submit():
         
         words = text.split('<<SEP>>')
 
-        print(words)
+        print("words",words)
 
         tags = []
         domains = []

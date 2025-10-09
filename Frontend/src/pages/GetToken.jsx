@@ -7,7 +7,7 @@ function GetToken({ roomid }) {
     // Get values from sessionStorage
     const userid = sessionStorage.getItem('user_id');
     const username = sessionStorage.getItem('username');
-    const token = sessionStorage.getItem('webtoken');
+    const token = sessionStorage.getItem('token');
 
     // Debug logging
     console.log('=== GetToken Debug ===');

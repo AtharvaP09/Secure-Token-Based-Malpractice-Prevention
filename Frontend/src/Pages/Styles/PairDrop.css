@@ -186,7 +186,7 @@
 .pd-modal {
   width:420px;
   max-width:94%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  background: black;
   padding:16px;
   border-radius:12px;
   box-shadow:0 12px 40px rgba(0,0,0,0.6);
@@ -197,6 +197,10 @@
 .tag { display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; background: rgba(255,255,255,0.03); font-size:13px; color:var(--muted); }
 .tag .x { cursor:pointer; margin-left:6px; opacity:0.8; }
 
+
+option{
+  background-color: black;
+}
 /* responsive */
 @media (max-width: 920px) {
   .pd-panel { grid-template-columns: 1fr; padding:14px; }

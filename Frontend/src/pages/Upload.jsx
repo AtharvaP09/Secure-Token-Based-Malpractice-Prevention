@@ -12,7 +12,7 @@ export default function Upload() {
     }
 
     // Get auth token
-    const token = sessionStorage.getItem('webtoken');
+    const token = sessionStorage.getItem('token');
     const username = sessionStorage.getItem('username');
     const userId = sessionStorage.getItem('user_id');
 
