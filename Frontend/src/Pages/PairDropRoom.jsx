@@ -99,6 +99,7 @@ export default function PairDropRoom() {
             <div>
               <div className="h1">Room • {roomId}</div>
               <div className="h2">Creator: {creator || "—"}</div>
+              <h4>You are {sessionStorage.getItem('username')}</h4>
             </div>
           </div>
 
