@@ -11,9 +11,9 @@ import PairDropRoom from './pages/PairDropRoom'; // <-- new PairDrop room
 import Submissions from './pages/Submissions';
 
 function App() {
-  const location = useLocation();
-  const [displayLocation, setDisplayLocation] = useState(location);
-  const [transitionStage, setTransitionStage] = useState('fadeIn');
+  // const location = useLocation();
+  // const [displayLocation, setDisplayLocation] = useState(location);
+  // const [transitionStage, setTransitionStage] = useState('fadeIn');
 
   // useEffect(() => {
   //   if (location.pathname !== displayLocation.pathname) {

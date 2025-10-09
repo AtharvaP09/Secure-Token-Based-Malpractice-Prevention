@@ -1,6 +1,7 @@
 import React from 'react';
 import './Styles/Landing.css'
 import { useNavigate } from "react-router-dom";
+import { FaShield } from "react-icons/fa6";
 
 function Landing() {
 
@@ -18,7 +19,7 @@ function Landing() {
 
       <header>
         <nav className="container">
-          <div className="logo">🛡 DeepBlue</div>
+          <div className="logo"><FaShield />ExamGaurd</div>
           <ul className="nav-links">
             <li><a href="Dashboard">Dashboard</a></li>
             <li><a href="#features">Features</a></li>
