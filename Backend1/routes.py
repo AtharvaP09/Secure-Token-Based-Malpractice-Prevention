@@ -68,12 +68,17 @@ def token_required(f):
             return jsonify({'message': 'Invalid authorization header format!'}), 401
 
         token = parts[1].strip('"')
+        print("token",token)
 
 
         try:
             data = jwt.decode(token, os.getenv('JWT_KEY'), algorithms=["HS256"])
-            user = User.query.filter_by(id=data['public_id']).first()
-            if not user:
+
+            cursor = con.cursor(dictionary = True)
+            cursor.execute("select * from users where userid = %s;", [int(data['public_id'])])
+            res = cursor.fetchall()
+
+            if not len(res):
                 print(3)
                 return jsonify({'message': 'User not found!'}), 404
         except jwt.ExpiredSignatureError:
@@ -83,11 +88,14 @@ def token_required(f):
             print(5)
             return jsonify({'message': 'Invalid token!'}), 401
         
+        user = res[0]
+        print("================ User =================\n",user)
+        
         current_user = {
-            "id": user.id,
-            "public_id": user.id,
-            "username": user.username,
-            "email": user.email
+            "id": user['userid'],
+            "public_id": user['userid'],
+            "username": user['username'],
+            "email": user['email']
         }
 
         return f(current_user, *args, **kwargs)
@@ -118,11 +126,11 @@ def UserRegistration():
     if len(cursor.fetchall()):
         return jsonify({"message": "Email already registered"}), 400
 
-    if User.query.filter_by(email=email).first():
-        return jsonify({"message": "Email already registered"}), 400
+    # if User.query.filter_by(email=email).first():
+    #     return jsonify({"message": "Email already registered"}), 400
 
-    user = User(username=username, email=email)
-    user.set_password(password)
+    # user = User(username=username, email=email)
+    # user.set_password(password)
 
     hashed = generate_password_hash(password)
 
@@ -130,8 +138,8 @@ def UserRegistration():
     
     cursor.close()
     con.commit()
-    db.session.add(user)
-    db.session.commit()
+    # db.session.add(user)
+    # db.session.commit()
 
     return jsonify({"message": "User registered successfully"}), 201
 
@@ -142,24 +150,39 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    user = User.query.filter_by(email=email).first()
-    if user is None or not user.check_password(password):
-        return jsonify({"message": "Invalid credentials"}), 401
+    # user = User.query.filter_by(email=email).first()
+    # if user is None or not user.check_password(password):
+    #     return jsonify({"message": "Invalid credentials"}), 401
     
     cursor = con.cursor(dictionary = True)
 
-    cursor.execute("select * from users where username ")
+    cursor.execute("select * from users where email = %s;", [email])
+
+    res = cursor.fetchall()
+    print(res)
+    # print(check_password_hash(res['passwordhash'] , password))
+
+    if not len(res):
+        return jsonify({"message": "Invalid credentials"}), 401
+
+    res = res[0]
+    if not check_password_hash(res['passwordhash'] , password):
+        return jsonify({"message": "Invalid credentials"}), 401
+    
+    
+    data = {"public_id": res['userid'], 'username' : res['username']}
+
 
     # Generate JWT token
     webtoken = jwt.encode(
-        {"public_id": user.id, 'username' : user.username}, os.getenv("JWT_KEY"), algorithm="HS256"
+       data, os.getenv("JWT_KEY"), algorithm="HS256"
     )
 
     # Return token, user ID, and username
     return jsonify({
         "message": "Login successful",
-        "user_id": user.id,
-        "username": user.username,  
+        "user_id": res['userid'] ,
+        "username": res['username'],  
         "webtoken": webtoken
     }), 200
 

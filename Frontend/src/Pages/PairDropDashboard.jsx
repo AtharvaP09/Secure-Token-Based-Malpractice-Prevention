@@ -16,13 +16,13 @@ function CreateRoomModal({ onClose, onCreate }) {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const domains = [
-    "openai",
+    "chatgpt",
     "gemini",
     "copilot",
     "claude",
     "perplexity",
     "huggingface",
-    "pi",
+    "pi.ai",
     "blackbox",
   ]
 

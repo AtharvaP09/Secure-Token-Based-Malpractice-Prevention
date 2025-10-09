@@ -16,6 +16,17 @@ export default function PairDropRoom() {
   const creatorFromState = location.state?.creator || "";
 
   const [creator, setCreator] = useState(creatorFromState);
+  console.log(sessionStorage.getItem('username'));
+
+  // useEffect(()=>{
+
+  //   console.log(sessionStorage.getItem('username'));
+    
+  //   console.log(sessionStorage.getItem('username') == creator);
+    
+
+  // }, [creator])
+  
   const [users, setUsers] = useState([]);
   const [joined, setJoined] = useState(false);
   const [joining, setJoining] = useState(false);
@@ -118,14 +129,14 @@ export default function PairDropRoom() {
                 </div>
 
                 {/* View Submissions */}
-                <div>
+                { sessionStorage.getItem('username') == creator && <div>
                   <button 
                     className="pd-btn" 
                     onClick={() => navigate('/submissions/' + roomId)}
                   >
                     View Submissions
                   </button>
-                </div>
+                </div>}
               </div>
             </div>
 
