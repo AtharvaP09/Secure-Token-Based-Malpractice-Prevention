@@ -2,9 +2,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import socket from "../socket";
-import "./Styles/PairDrop.css";
+import "./Styles/room.css";
 import GetToken from "./GetToken";
 import Upload from "./Upload";
+//React Icons
+import { IoIosCopy } from "react-icons/io";
+import { FaShareAlt } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
+import { MdDriveFolderUpload } from "react-icons/md";
+import { FaDownload } from "react-icons/fa6";
+
 
 export default function PairDropRoom() {
   const { roomId } = useParams();
@@ -16,53 +23,41 @@ export default function PairDropRoom() {
   const creatorFromState = location.state?.creator || "";
 
   const [creator, setCreator] = useState(creatorFromState);
-  console.log(sessionStorage.getItem('username'));
-
-  // useEffect(()=>{
-
-  //   console.log(sessionStorage.getItem('username'));
-    
-  //   console.log(sessionStorage.getItem('username') == creator);
-    
-
-  // }, [creator])
-  
   const [users, setUsers] = useState([]);
   const [joined, setJoined] = useState(false);
   const [joining, setJoining] = useState(false);
   const [infoMsg, setInfoMsg] = useState("");
 
-  // join on mount if this user is not the creator
-        useEffect(() => {
-        if (!roomId) {
-            alert("Missing room id");
-            navigate("/dashboard");
-            return;
-        }
+  // Check if current user is the creator
+  const isCreator = username === creator;
 
-        const isCreator = username === creator;
+  useEffect(() => {
+    if (!roomId) {
+      alert("Missing room id");
+      navigate("/dashboard");
+      return;
+    }
 
-        // All users now join via socket
-        setJoining(true);
-        socket.emit("join_room", { roomId, username, password });
+    // All users now join via socket
+    setJoining(true);
+    socket.emit("join_room", { roomId, username, password });
 
-        // socket listeners
-        socket.on("joined_room", (data) => {
-            if (data && data.roomId === roomId) {
-            setCreator(data.creator || creator);
-            setUsers(data.users || []);
-            setJoined(true);
-            }
-        });
+    // socket listeners
+    socket.on("joined_room", (data) => {
+      if (data && data.roomId === roomId) {
+        setCreator(data.creator || creator);
+        setUsers(data.users || []);
+        setJoined(true);
+      }
+    });
 
-        socket.on("user_list", (data) => {
-            if (data && data.roomId === roomId) {
-            setUsers(data.users || []);
-            }
-        });
+    socket.on("user_list", (data) => {
+      if (data && data.roomId === roomId) {
+        setUsers(data.users || []);
+      }
+    });
 
     socket.on("error", (err) => {
-      // show error and redirect back
       if (err && err.message) {
         alert(err.message);
       }
@@ -70,7 +65,6 @@ export default function PairDropRoom() {
     });
 
     return () => {
-      // leave room when unmounting
       socket.emit("leave_room", { roomId, username });
       socket.off("joined_room");
       socket.off("user_list");
@@ -83,103 +77,167 @@ export default function PairDropRoom() {
     navigate("/dashboard");
   }
 
-  // copy room id
   function copyRoomId() {
     navigator.clipboard?.writeText(roomId);
-    setInfoMsg("Room ID copied");
+    setInfoMsg("Room ID copied to clipboard!");
     setTimeout(() => setInfoMsg(""), 1800);
   }
 
   return (
-    <div className="pd-shell">
-      <div className="pd-panel">
-        <div className="pd-left">
-          <div className="pd-title">
-            <div className="logo">PD</div>
-            <div>
-              <div className="h1">Room • {roomId}</div>
-              <div className="h2">Creator: {creator || "—"}</div>
-              <h4>You are {sessionStorage.getItem('username')}</h4>
+    <div className="eg-room-container">
+      {/* Animated Background */}
+      <div className="eg-bg-animation">
+        <div className="eg-floating-element"></div>
+        <div className="eg-floating-element"></div>
+        <div className="eg-floating-element"></div>
+      </div>
+
+      {/* Header */}
+      <div className="eg-room-header">
+        <div className="eg-room-header-left">
+          <h1 className="eg-room-title">
+            Exam Room: <span className="eg-gradient-text">{roomId}</span>
+          </h1>
+          <p className="eg-room-creator">Created by: {creator || "—"}</p>
+        </div>
+        <div className="eg-room-header-right">
+          <div className="eg-user-badge">
+            Welcome,  <strong>{username}</strong>
+            {isCreator && <span className="eg-creator-badge"> (Creator)</span>}
+          </div>
+          <button className="eg-leave-btn" onClick={handleLeave}>
+            Leave Room
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="eg-room-content">
+        {/* Left Sidebar - Controls */}
+        <div className="eg-room-sidebar">
+          <div className="eg-room-actions">
+            <h3>Room Actions</h3>
+            
+            <div className="eg-action-group">
+              <button className="eg-action-btn eg-primary-btn" onClick={copyRoomId}>
+                <span className="eg-btn-icon"><IoIosCopy /></span>
+                Copy Room ID
+              </button>
+              
+              <button 
+                className="eg-action-btn eg-secondary-btn" 
+                onClick={() => navigator.share?.({ 
+                  title: 'Join Exam Room', 
+                  text: `Join exam room ${roomId} on ExamGuard`, 
+                  url: window.location.href 
+                })}
+              >
+                <span className="eg-btn-icon"><FaShareAlt /></span>
+                Share Room
+              </button>
+            </div>
+
+            <div className="eg-features-section">
+              {/* Download Token - Only for participants (not creator) */}
+              {!isCreator && (
+                <div className="eg-feature-item">
+                  <div className="eg-feature-icon"><FaDownload />
+                </div>
+                  <div>
+                    <div className="eg-feature-title">Download Token</div>
+                    <div className="eg-feature-desc">Get monitoring token for this session</div>
+                    <GetToken roomid={roomId} />
+                  </div>
+                </div>
+              )}
+
+              {/* Upload Files - Only for participants (not creator) */}
+              {!isCreator && (
+                <div className="eg-feature-item">
+                  <div className="eg-feature-icon"><MdDriveFolderUpload /></div>
+                  <div>
+                    <div className="eg-feature-title">Upload Files</div>
+                    <div className="eg-feature-desc">Submit exam files and documents</div>
+                    <Upload roomid={roomId} username={username} />
+                  </div>
+                </div>
+              )}
+
+              {/* View Submissions - Only for creator */}
+              {isCreator && (
+                <div className="eg-feature-item">
+                  <div className="eg-feature-icon"><FaEye /></div>
+                  <div>
+                    <div className="eg-feature-title">View Submissions</div>
+                    <div className="eg-feature-desc">Monitor all student submissions</div>
+                    <button 
+                      className="eg-action-btn eg-accent-btn" 
+                      onClick={() => navigate('/submissions/' + roomId)}
+                    >
+                      View Submissions
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Creator Information Message */}
+              {/* {isCreator && (
+                <div className="eg-info-card">
+                  <div className="eg-info-icon">ℹ️</div>
+                  <div className="eg-info-content">
+                    <strong>Creator Access</strong>
+                    <p>As the room creator, you can monitor submissions but don't need download/upload tokens.</p>
+                  </div>
+                </div>
+              )} */}
             </div>
           </div>
 
-          <div style={{ marginTop: 12 }}>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button className="pd-btn" onClick={copyRoomId}>Copy Room ID</button>
-              <button className="pd-btn ghost" onClick={() => navigator.share?.({ title: 'Join Room', text: `Join room ${roomId}`, url: window.location.href })}>Share</button>
+          {infoMsg && (
+            <div className="eg-info-message">
+              ✅ {infoMsg}
             </div>
-
-            <div style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>Your name</div>
-              <div className="tag">{username}</div>
-            </div>
-
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>Actions</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {/* Get Token Component */}
-                <div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>Download Token</div>
-                  <GetToken roomid={roomId} />
-                </div>
-
-                {/* Upload Component */}
-                <div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>Upload File</div>
-                  <Upload />
-                </div>
-
-                {/* View Submissions */}
-                { sessionStorage.getItem('username') == creator && <div>
-                  <button 
-                    className="pd-btn" 
-                    onClick={() => navigate('/submissions/' + roomId)}
-                  >
-                    View Submissions
-                  </button>
-                </div>}
-              </div>
-            </div>
-
-            <div style={{ marginTop: 14 }}>
-              <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>Room info</div>
-              <div className="room-item" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700 }}>{roomId}</div>
-                  <div className="room-meta">Creator: {creator || "—"}</div>
-                </div>
-                <div>
-                  <button className="pd-btn ghost" onClick={handleLeave}>Leave</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {infoMsg && <div style={{ marginTop: 12, color: 'var(--success)' }}>{infoMsg}</div>}
+          )}
         </div>
 
-        <div className="pd-stage">
-          <div className="stage-head">
-            <div className="stage-title">Participants</div>
-            <div className="h2">{users.length} online</div>
-          </div>
-
-          <div className="bubble-grid">
-            {users.map((u, index) => (
-              <div key={u + index} className={`participant enter`}>
-                <div className="avatar">{String(u).slice(0, 2).toUpperCase()}</div>
-                <div className="pname">{u}</div>
-                <div className="pmeta">{u === creator ? "creator" : "participant"}</div>
+        {/* Right Side - Participants */}
+        <div className="eg-room-main">
+          <div className="eg-participants-section">
+            <div className="eg-section-header">
+              <h2>Live Participants</h2>
+              <div className="eg-online-count">
+                {users.length} {users.length === 1 ? 'person' : 'people'} online
               </div>
-            ))}
+            </div>
 
-            {users.length === 0 && (
-              <div style={{ color: 'var(--muted)', padding: 16 }}>No participants yet — waiting for users to join</div>
-            )}
-          </div>
+            <div className="eg-participants-grid">
+              {users.map((user, index) => (
+                <div key={user + index} className="eg-participant-card">
+                  <div className="eg-participant-avatar">
+                    {String(user).slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="eg-participant-info">
+                    <div className="eg-participant-name">{user}</div>
+                    <div className={`eg-participant-role ${user === creator ? 'creator' : 'participant'}`}>
+                      {user === creator ? ' Creator' : ' Participant'}
+                    </div>
+                  </div>
+                  <div className="eg-participant-status online"></div>
+                </div>
+              ))}
 
-          <div style={{ marginTop: 12, color: 'var(--muted)', fontSize: 13 }}>
-            Tip: participants appear in realtime
+              {users.length === 0 && (
+                <div className="eg-empty-state">
+                  <div className="eg-empty-icon">👥</div>
+                  <h3>No participants yet</h3>
+                  <p>Waiting for users to join the room...</p>
+                </div>
+              )}
+            </div>
+
+            <div className="eg-room-tip">
+              Participants appear in real-time as they join the room
+            </div>
           </div>
         </div>
       </div>

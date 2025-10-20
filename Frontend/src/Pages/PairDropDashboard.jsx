@@ -3,8 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import socket from "../socket";
 import "./Styles/PairDrop.css";
+import LogoTransparent from '../assets/LogoTransparent.png';
 
-// Inline CreateRoomModal with PairDrop styling
+// Inline CreateRoomModal with flashy purple styling
 function CreateRoomModal({ onClose, onCreate }) {
   const [roomId, setRoomId] = useState("");
   const [password, setPassword] = useState("");
@@ -15,16 +16,6 @@ function CreateRoomModal({ onClose, onCreate }) {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const domains = [
-    "chatgpt",
-    "gemini",
-    "copilot",
-    "claude",
-    "perplexity",
-    "huggingface",
-    "pi.ai",
-    "blackbox",
-  ]
 
   useEffect(() => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -39,8 +30,8 @@ function CreateRoomModal({ onClose, onCreate }) {
     const d = domain.trim();
     if (!d) return;
 
-    if (d == 'all') {
-      return addAllDomains()
+    if (d === 'all') {
+      return addAllDomains();
     }
 
     setRestricted((r) => [...r, d]);
@@ -48,7 +39,11 @@ function CreateRoomModal({ onClose, onCreate }) {
   };
 
   function addAllDomains() {
-    setRestricted(domains)
+    const domains = [
+      "openai", "gemini", "copilot", "claude", "perplexity", 
+      "huggingface", "pi", "blackbox", "codeium", "replit", "notebooklm"
+    ];
+    setRestricted(domains);
   }
 
   const removeDomain = (idx) => setRestricted((r) => r.filter((_, i) => i !== idx));
@@ -75,149 +70,139 @@ function CreateRoomModal({ onClose, onCreate }) {
   };
 
   return (
-    <div className="pd-modal-overlay">
-      <div className="pd-modal" style={{ width: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
-        <h3 style={{ marginBottom: '16px' }}>Create Room</h3>
+    <div className="eg-modal-overlay">
+      <div className="eg-modal">
+        <div className="eg-modal-header">
+          <h3>Create Exam Room</h3>
+          <button className="eg-close-btn" onClick={onClose}>×</button>
+        </div>
         
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Room ID</div>
-          <div style={{ fontWeight: 700, fontSize: '16px' }}>{roomId}</div>
-        </div>
+        <div className="eg-modal-body">
+          <div className="eg-form-group">
+            <label>Room ID</label>
+            <div className="eg-room-id">{roomId}</div>
+          </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Room Password</div>
-          <input 
-            className="input" 
-            type="password"
-            placeholder="Enter room password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-          />
-        </div>
-
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Restricted Domains (Keywords) (Optional)</div>
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-  <select 
-    className="input" 
-    placeholder="e.g., google, chatgpt" 
-    value={domain} 
-    onChange={(e) => setDomain(e.target.value)} 
-    onKeyPress={(e) => e.key === 'Enter' && addDomain()}
-  >
-    <option value="">Select AI website</option>
-    <option value="all">All AI Websites</option>
-    <option value="openai">ChatGPT (OpenAI)</option>
-    <option value="gemini">Gemini (Google)</option>
-    <option value="copilot">Copilot (Microsoft)</option>
-    <option value="claude">Claude (Anthropic)</option>
-    <option value="perplexity">Perplexity AI</option>
-    <option value="huggingface">Hugging Face</option>
-    <option value="pi">Pi AI</option>
-    <option value="blackbox">Blackbox AI</option>
-    <option value="codeium">Codeium</option>
-    <option value="replit">Replit</option>
-    <option value="notebooklm">NotebookLM</option>
-  </select>
-  <button className="pd-btn" onClick={addDomain}>Add</button>
-</div>
-
-          {restricted.length > 0 && (
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {restricted.map((d, i) => (
-                <div key={i} className="tag">
-                  {d} <span className="x" onClick={() => removeDomain(i)}>✕</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Start Time</div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="eg-form-group">
+            <label>Room Password</label>
             <input 
-              className="input"
-              type="date" 
-              value={date} 
-              onChange={(e) => setDate(e.target.value)} 
-              style={{ flex: 1 }}
-            />
-            <input 
-              className="input"
-              type="time" 
-              value={time} 
-              onChange={(e) => setTime(e.target.value)} 
-              style={{ flex: 1 }}
+              className="eg-input" 
+              type="password"
+              placeholder="Enter room password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
             />
           </div>
-        </div>
 
-        <div style={{ marginBottom: '16px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Duration</div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <input 
-                className="input"
-                type="number" 
-                min="0" 
-                value={hours} 
-                onChange={(e) => setHours(e.target.value)} 
-                placeholder="0"
-                style={{ width: '60px', textAlign: 'center' }}
-              />
-              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>h</span>
+          <div className="eg-form-group">
+            <label>Restricted AI Websites (Optional)</label>
+            <div className="eg-domain-selector">
+              <select 
+                className="eg-input" 
+                value={domain} 
+                onChange={(e) => setDomain(e.target.value)}
+              >
+                <option value="">Select AI website to block</option>
+                <option value="all">All AI Websites</option>
+                <option value="openai">ChatGPT (OpenAI)</option>
+                <option value="gemini">Gemini (Google)</option>
+                <option value="copilot">Copilot (Microsoft)</option>
+                <option value="claude">Claude (Anthropic)</option>
+                <option value="perplexity">Perplexity AI</option>
+                <option value="huggingface">Hugging Face</option>
+                <option value="pi">Pi AI</option>
+                <option value="blackbox">Blackbox AI</option>
+                <option value="codeium">Codeium</option>
+                <option value="replit">Replit</option>
+                <option value="notebooklm">NotebookLM</option>
+              </select>
+              <button className="eg-add-btn" onClick={addDomain}>Add</button>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            
+            {restricted.length > 0 && (
+              <div className="eg-tags-container">
+                {restricted.map((d, i) => (
+                  <div key={i} className="eg-tag">
+                    {d} <span className="eg-tag-remove" onClick={() => removeDomain(i)}>×</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="eg-form-group">
+            <label>Exam Start Time</label>
+            <div className="eg-time-inputs">
               <input 
-                className="input"
-                type="number" 
-                min="0" 
-                max="59" 
-                value={minutes} 
-                onChange={(e) => setMinutes(e.target.value)} 
-                placeholder="0"
-                style={{ width: '60px', textAlign: 'center' }}
+                className="eg-input"
+                type="date" 
+                value={date} 
+                onChange={(e) => setDate(e.target.value)} 
               />
-              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>m</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <input 
-                className="input"
-                type="number" 
-                min="0" 
-                max="59" 
-                value={seconds} 
-                onChange={(e) => setSeconds(e.target.value)} 
-                placeholder="0"
-                style={{ width: '60px', textAlign: 'center' }}
+                className="eg-input"
+                type="time" 
+                value={time} 
+                onChange={(e) => setTime(e.target.value)} 
               />
-              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>s</span>
             </div>
-            <div style={{ 
-              marginLeft: 'auto', 
-              padding: '6px 12px', 
-              borderRadius: '6px', 
-              background: 'rgba(124,58,237,0.1)',
-              fontSize: '13px',
-              color: 'var(--accent-1)',
-              fontWeight: 600
-            }}>
-              Total: {totalSeconds()}s
+          </div>
+
+          <div className="eg-form-group">
+            <label>Exam Duration</label>
+            <div className="eg-duration-inputs">
+              <div className="eg-duration-field">
+                <input 
+                  className="eg-input"
+                  type="number" 
+                  min="0" 
+                  value={hours} 
+                  onChange={(e) => setHours(e.target.value)} 
+                  placeholder="0"
+                />
+                <span>Hours</span>
+              </div>
+              <div className="eg-duration-field">
+                <input 
+                  className="eg-input"
+                  type="number" 
+                  min="0" 
+                  max="59" 
+                  value={minutes} 
+                  onChange={(e) => setMinutes(e.target.value)} 
+                  placeholder="0"
+                />
+                <span>Minutes</span>
+              </div>
+              <div className="eg-duration-field">
+                <input 
+                  className="eg-input"
+                  type="number" 
+                  min="0" 
+                  max="59" 
+                  value={seconds} 
+                  onChange={(e) => setSeconds(e.target.value)} 
+                  placeholder="0"
+                />
+                <span>Seconds</span>
+              </div>
+              <div className="eg-total-duration">
+                Total: {totalSeconds()} seconds
+              </div>
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: '20px' }}>
-          <button className="pd-btn ghost" onClick={onClose}>Cancel</button>
-          <button className="pd-btn primary" onClick={handleCreate}>Create Room</button>
+        <div className="eg-modal-footer">
+          <button className="eg-btn eg-btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="eg-btn eg-btn-primary" onClick={handleCreate}>Create Exam Room</button>
         </div>
       </div>
     </div>
   );
 }
 
-// Inline JoinRoomModal with PairDrop styling
+// Inline JoinRoomModal with flashy purple styling
 function JoinRoomModal({ onClose, onJoin }) {
   const [roomId, setRoomId] = useState("");
   const [password, setPassword] = useState("");
@@ -231,37 +216,42 @@ function JoinRoomModal({ onClose, onJoin }) {
   };
 
   return (
-    <div className="pd-modal-overlay">
-      <div className="pd-modal">
-        <h3 style={{ marginBottom: '16px' }}>Join Room</h3>
+    <div className="eg-modal-overlay">
+      <div className="eg-modal">
+        <div className="eg-modal-header">
+          <h3>Join Exam Room</h3>
+          <button className="eg-close-btn" onClick={onClose}>×</button>
+        </div>
         
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Room ID</div>
-          <input
-            className="input"
-            type="text"
-            placeholder="Enter 8-character Room ID"
-            value={roomId}
-            onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-            maxLength={8}
-          />
+        <div className="eg-modal-body">
+          <div className="eg-form-group">
+            <label>Room ID</label>
+            <input
+              className="eg-input"
+              type="text"
+              placeholder="Enter 8-character Room ID"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+              maxLength={8}
+            />
+          </div>
+
+          <div className="eg-form-group">
+            <label>Password</label>
+            <input
+              className="eg-input"
+              type="password"
+              placeholder="Enter Room Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+            />
+          </div>
         </div>
 
-        <div style={{ marginBottom: '16px' }}>
-          <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '6px' }}>Password</div>
-          <input
-            className="input"
-            type="password"
-            placeholder="Enter Room Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
-          />
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-          <button className="pd-btn ghost" onClick={onClose}>Cancel</button>
-          <button className="pd-btn primary" onClick={handleSubmit}>Join Room</button>
+        <div className="eg-modal-footer">
+          <button className="eg-btn eg-btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="eg-btn eg-btn-primary" onClick={handleSubmit}>Join Room</button>
         </div>
       </div>
     </div>
@@ -272,12 +262,6 @@ function JoinRoomModal({ onClose, onJoin }) {
 export default function PairDropDashboard() {
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
-  const [rooms, setRooms] = useState([]);
-  const [participantsPreview, setParticipantsPreview] = useState([
-    { name: "Alice" }, 
-    { name: "Bob" }, 
-    { name: "Charlie" }
-  ]);
 
   const navigate = useNavigate();
   const username = sessionStorage.getItem("username") || "Guest";
@@ -293,19 +277,12 @@ export default function PairDropDashboard() {
       });
     });
 
-    socket.on("user_list", (data) => {
-      if (data && data.users) {
-        setParticipantsPreview(data.users.map(u => ({ name: u })));
-      }
-    });
-
     socket.on("error", (err) => { 
       if (err && err.message) alert(err.message); 
     });
 
     return () => { 
       socket.off("room_created"); 
-      socket.off("user_list"); 
       socket.off("error"); 
     };
   }, [navigate, username]);
@@ -327,86 +304,71 @@ export default function PairDropDashboard() {
   };
 
   return (
-    <div className="pd-shell">
-      <div className="pd-panel">
-        <div className="pd-left">
-          <div className="pd-title">
-            <div className="logo">DB</div>
-            <div>
-              <div className="h1">DeepBlue Rooms</div>
-              <div className="h2">Secure exam monitoring</div>
-            </div>
-          </div>
+    <div className="eg-dashboard">
+      {/* Animated Background */}
+      <div className="eg-bg-animation">
+        <div className="eg-floating-element"></div>
+        <div className="eg-floating-element"></div>
+        <div className="eg-floating-element"></div>
+      </div>
 
-          <div style={{ marginTop: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="pd-btn primary" onClick={() => setShowCreate(true)}>
-              Create Room
-            </button>
-            <button className="pd-btn" onClick={() => setShowJoin(true)}>
-              Join Room
-            </button>
-          </div>
-
-          <div style={{ marginTop: 14, fontSize: 13, color: 'var(--muted)' }}>
-            Logged in as: <strong style={{ color: 'white' }}>{username}</strong>
-          </div>
-
-          <div style={{ marginTop: 16 }}>
-            <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>
-              Active Rooms
-            </div>
-            <div className="room-list">
-              {rooms.length === 0 && (
-                <div className="room-item">
-                  <div className="room-meta">No active rooms yet. Create one to get started!</div>
-                </div>
-              )}
-              {rooms.map(r => (
-                <div className="room-item" key={r.roomId}>
-                  <div>
-                    <div style={{ fontWeight: 700 }}>{r.roomId}</div>
-                    <div className="room-meta">
-                      Creator: {r.creator} • Duration: {r.duration}s
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button 
-                      className="pd-btn" 
-                      onClick={() => navigate(`/room/${r.roomId}`, { 
-                        state: { username, password: r.password, creator: r.creator }
-                      })}
-                    >
-                      Enter
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Header */}
+      <div className="eg-header">
+        <div className="eg-header-left">
+          <img src={LogoTransparent} alt="ExamGuard" className="eg-logo" />
+          <span className="eg-brand"></span>
         </div>
+        <div className="eg-header-right">
+          <div className="eg-user-info">Welcome, <strong>{username}</strong></div>
+        </div>
+      </div>
 
-        <div className="pd-stage">
-          <div className="stage-head">
-            <div className="stage-title">Live Preview</div>
-            <div className="h2">Recent participants</div>
-          </div>
-          
-          <div className="bubble-grid">
-            {participantsPreview.map((p, i) => (
-              <div className="participant enter" key={p.name + i}>
-                <div className="avatar">{p.name?.slice(0, 2).toUpperCase()}</div>
-                <div className="pname">{p.name}</div>
-                <div className="pmeta">online</div>
+      {/* Main Content */}
+      <div className="eg-main-content">
+        <div className="eg-hero-section">
+          <div className="eg-hero-content">
+            <h1 className="eg-hero-title">
+            <span className="eg-gradient-text">Secure Exam Monitoring</span>
+            </h1>
+            <p className="eg-hero-subtitle">
+              Advanced anti-cheating technology with military-grade security and real-time monitoring
+            </p>
+            
+            <div className="eg-action-buttons">
+              <button className="eg-primary-btn flashy-btn" onClick={() => setShowCreate(true)}>
+                <span className="eg-btn-icon"></span>
+                Create New Room
+                <div className="eg-btn-glow"></div>
+              </button>
+              <button className="eg-secondary-btn flashy-btn" onClick={() => setShowJoin(true)}>
+                <span className="eg-btn-icon"></span>
+                Join Existing Room
+                <div className="eg-btn-glow"></div>
+              </button>
+            </div>
+
+            {/* <div className="eg-features-grid">
+              <div className="eg-feature-card">
+                <div className="eg-feature-icon">🔒</div>
+                <h3>Military-grade Security</h3>
+                <p>End-to-end encrypted monitoring with advanced protection</p>
               </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: 12, fontSize: 13, color: 'var(--muted)' }}>
-            💡 Tip: Create a room to start monitoring exam sessions
+              <div className="eg-feature-card">
+                <div className="eg-feature-icon">📊</div>
+                <h3>Real-time Analytics</h3>
+                <p>Live activity tracking & comprehensive reporting</p>
+              </div>
+              <div className="eg-feature-card">
+                <div className="eg-feature-icon">🤖</div>
+                <h3>AI Detection</h3>
+                <p>Smart cheating prevention with pattern recognition</p>
+              </div>
+            </div> */}
           </div>
         </div>
       </div>
 
+      {/* Modals */}
       {showCreate && <CreateRoomModal onClose={() => setShowCreate(false)} onCreate={handleCreate} />}
       {showJoin && <JoinRoomModal onClose={() => setShowJoin(false)} onJoin={handleJoin} />}
     </div>

@@ -9,7 +9,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <App />
-      <TransitionOverlay />
+      {/* <TransitionOverlay /> */}
     </BrowserRouter>
   </StrictMode>
 );

@@ -1,28 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Styles/Landing.css'
 import { useNavigate } from "react-router-dom";
 import LogoTransparent from '../assets/LogoTransparent.png';
-// import { FaShield } from "react-icons/fa6";
 
 function Landing() {
-
   const navigate = useNavigate()
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
+  // Show button when page is scrolled down
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
 
   return (
     <div>
- 
-
       <div className="bg-animation">
         <div className="floating-element"></div>
         <div className="floating-element"></div>
         <div className="floating-element"></div>
       </div>
 
+      {/* Back to Top Button */}
+      {showScrollTop && (
+        <button className="back-to-top-btn" onClick={scrollToTop}>
+          <svg className="svgIcon" viewBox="0 0 384 512">
+            <path
+              d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
+            ></path>
+          </svg>
+        </button>
+      )}
+
       <header>
-        <nav className="container">
+        <nav className="nav-container">
           <div className="logo"><img src={LogoTransparent} alt="Logo" /></div>
           <ul className="nav-links">
-            <li><a href="Dashboard">Dashboard</a></li>
             <li><a href="#features">Features</a></li>
             <li><a href="#how-it-works">How It Works</a></li>
             <li><a href="#contact">Contact</a></li>
@@ -32,7 +57,7 @@ function Landing() {
 
       <main>
         <section className="hero">
-          <div className="container">
+          <div className="hero-content">
             <h1>Secure Online Testing Made Simple</h1>
             <p>Advanced anti-cheating technology that monitors, tracks, and reports all user activity during online examinations with military-grade security.</p>
             <button className="cta-button" onClick={() => navigate('/dashboard')}>Get started</button>
@@ -40,7 +65,7 @@ function Landing() {
         </section>
 
         <section id="features" className="features">
-          <div className="container">
+          <div className="section-container">
             <h2 className="section-title">Powerful Anti-Cheating Features</h2>
             <div className="features-grid">
               <div className="feature-card">
@@ -78,9 +103,9 @@ function Landing() {
         </section>
 
         <section id="how-it-works" className="how-it-works">
-          <div className="container">
+          <div className="section-container">
             <h2 className="section-title">How ExamGuard Works</h2>
-            <div className="steps">
+            <div className="steps-grid">
               <div className="step">
                 <div className="step-number">1</div>
                 <h3>Admin Creates Secure Room</h3>
@@ -107,20 +132,20 @@ function Landing() {
       </main>
 
       <footer id="contact">
-        <div className="container">
-          <div className="footer-content">
-            <h3 style={{marginBottom: '20px'}}>Ready to Secure Your Online Exams?</h3>
-            <p style={{marginBottom: '30px', opacity: 0.8}}>Join thousands of educators who trust ExamGuard for fair and secure online testing.</p>
-            <button className="cta-button" onClick={() => navigate('/dashboard')}>Get started</button>
-          </div>
+        <div className="footer-content">
+          <h3>Ready to Secure Your Online Exams?</h3>
+          <p>Join thousands of educators who trust ExamGuard for fair and secure online testing.</p>
+          <button className="cta-button" onClick={() => navigate('/dashboard')}>Get started</button>
+        </div>
+        <div className="footer-bottom">
           <div className="footer-links">
-            <a href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
-            <a href="#" onClick={(e) => e.preventDefault()}>Terms of Service</a>
-            <a href="#" onClick={(e) => e.preventDefault()}>Documentation</a>
-            <a href="#" onClick={(e) => e.preventDefault()}>Support</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Documentation</a>
+            <a href="#">Support</a>
           </div>
           <div className="copyright">
-            <p>&copy; 2025 ExamGuard. All rights reserved. Securing online education worldwide.</p>
+            <p>&copy; 2025 ExamGuard. All rights reserved.</p>
           </div>
         </div>
       </footer>
