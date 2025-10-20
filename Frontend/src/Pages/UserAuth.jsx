@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import API from "../api";
 import { useNavigate } from "react-router-dom";
 import "./Styles/UserAuth.css";
+import LogoTransparent from '../assets/LogoTransparent.png';
 //React Icons Visit this website for more --> https://react-icons.github.io/react-icons/
 import { FaUserAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
@@ -84,8 +85,7 @@ function UserAuth() {
         {/* Header */}
         <div className="auth-header">
           <div className="auth-logo">
-            <span className="logo-icon"><FaShield /></span>
-            <span className="logo-text">ExamGaurd</span>
+            <img src={LogoTransparent} alt="" />
           </div>
           <h2 className="auth-title">
             {isLogin ? "Welcome Back!" : "Create Account!"}

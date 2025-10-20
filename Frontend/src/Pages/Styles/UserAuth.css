@@ -90,25 +90,13 @@
   margin-bottom: 30px;
 }
 
-.auth-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
 
-.logo-icon {
-  font-size: 2rem;
-}
-
-.logo-text {
-  font-size: 1.5rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Fixed Logo Styles */
+.auth-logo img {
+  height: 100px; /* Adjust based on your logo's aspect ratio */
+  max-width: 200px;
+  object-fit: contain;
+  cursor: pointer;
 }
 
 .auth-title {
@@ -140,6 +128,7 @@
 .input-icon {
   position: absolute;
   left: 15px;
+  color: #2a2c37;
   font-size: 1.1rem;
   z-index: 1;
 }
@@ -296,12 +285,16 @@
     margin: 10px;
   }
   
-  .auth-features {
-    flex-direction: column;
-    gap: 15px;
+  .auth-logo img {
+    height: 60px; /* Smaller logo on mobile */
   }
   
   .auth-title {
     font-size: 1.5rem;
+  }
+  
+  .auth-features {
+    flex-direction: column;
+    gap: 15px;
   }
 }

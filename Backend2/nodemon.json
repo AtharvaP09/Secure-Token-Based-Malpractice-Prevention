@@ -1,9 +1,0 @@
-{
-  "watch": ["src", "index.js"],  
-  "ext": "js,json",              
-  "ignore": [
-    "temp_tokens/*",            
-    "*.zip",                     
-    "*.exe"                      
-  ]
-}
