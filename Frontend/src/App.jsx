@@ -1,14 +1,14 @@
 // src/App.js
 import './App.css';
-import UserAuth from "./pages/UserAuth";
+import UserAuth from "./Pages/UserAuth";
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import GetToken from './pages/GetToken';
+import GetToken from './Pages/GetToken';
 import PairDropDashboard from './Pages/PairDropDashboard'; // <-- new PairDrop dashboard
 import Landing from './Pages/Landing';
 import ProtectedRoute from './ProtectedRoute';
-import PairDropRoom from './pages/PairDropRoom'; // <-- new PairDrop room
-import Submissions from './pages/Submissions';
+import PairDropRoom from './Pages/PairDropRoom'; // <-- new PairDrop room
+import Submissions from './Pages/Submissions';
 
 function App() {
   // const location = useLocation();
