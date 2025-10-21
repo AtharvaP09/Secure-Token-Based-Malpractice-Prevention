@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Styles/GetToken.css';
-
+//For git to see the correct path of the file
 function GetToken({ roomid }) {
   const [loading, setLoading] = useState(false);
 
