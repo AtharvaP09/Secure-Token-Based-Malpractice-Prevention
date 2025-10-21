@@ -3,7 +3,7 @@ import './App.css';
 import UserAuth from "./Pages/UserAuth.jsx";
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import GetToken from './Pages/GetToken.jsx';
+import GetToken from './pages/GetToken.jsx';
 import PairDropDashboard from './Pages/PairDropDashboard.jsx'; // <-- new PairDrop dashboard
 import Landing from './Pages/Landing.jsx';
 import ProtectedRoute from './ProtectedRoute';
