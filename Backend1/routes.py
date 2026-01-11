@@ -17,6 +17,7 @@ import string
 import random
 import jwt
 from functools import wraps
+import re 
 
 
 def randomString(length):
@@ -105,7 +106,7 @@ def token_required(f):
 #Default
 @app.route('/')
 def home():
-    return "Secure Token Based Malpractice Prevention , Hello World!"
+    return "Secure Token Based Malpractice Prevention"
 
 #Users
 @app.route('/users' , methods=["GET"])
@@ -150,42 +151,64 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    # user = User.query.filter_by(email=email).first()
-    # if user is None or not user.check_password(password):
-    #     return jsonify({"message": "Invalid credentials"}), 401
+    # Check if it's admin login
+    if email.lower() == "admin@apsit.edu.in":
+        # Check admin password
+        if password == "admin12345":  # Your hardcoded admin password
+            # Create admin response with admin token
+            admin_data = {
+                "public_id": "admin",
+                "username": "Administrator",
+                "role": "admin"
+            }
+            
+            # Generate JWT token for admin
+            webtoken = jwt.encode(
+                admin_data, 
+                os.getenv("JWT_KEY"), 
+                algorithm="HS256"
+            )
+            
+            return jsonify({
+                "message": "Admin login successful",
+                "user_id": "admin",
+                "username": "Administrator",
+                "role": "admin",
+                "email": "admin@apsit.edu.in",
+                "webtoken": webtoken
+            }), 200
+        else:
+            return jsonify({"message": "Invalid admin credentials"}), 401
     
-    cursor = con.cursor(dictionary = True)
-
+    # Regular user login logic (existing code)
+    cursor = con.cursor(dictionary=True)
     cursor.execute("select * from users where email = %s;", [email])
-
     res = cursor.fetchall()
-    print(res)
-    # print(check_password_hash(res['passwordhash'] , password))
-
+    
     if not len(res):
         return jsonify({"message": "Invalid credentials"}), 401
 
     res = res[0]
-    if not check_password_hash(res['passwordhash'] , password):
+    if not check_password_hash(res['passwordhash'], password):
         return jsonify({"message": "Invalid credentials"}), 401
     
+    data = {"public_id": res['userid'], 'username': res['username'], 'role': 'user'}
     
-    data = {"public_id": res['userid'], 'username' : res['username']}
-
-
-    # Generate JWT token
+    # Generate JWT token for regular user
     webtoken = jwt.encode(
-       data, os.getenv("JWT_KEY"), algorithm="HS256"
+        data, 
+        os.getenv("JWT_KEY"), 
+        algorithm="HS256"
     )
 
-    # Return token, user ID, and username
     return jsonify({
         "message": "Login successful",
-        "user_id": res['userid'] ,
-        "username": res['username'],  
+        "user_id": res['userid'],
+        "username": res['username'],
+        "role": "user",
+        "email": email,
         "webtoken": webtoken
     }), 200
-
 def derive_key_and_iv(key_str, iv_str):
 
     key = hashlib.sha256(key_str.encode('utf-8')).digest()  # 32 bytes
@@ -519,7 +542,6 @@ def handleRoom():
 
     return jsonify({'data' : data})
     
-
 # Helper function to clean up files (if needed separately)
 @app.route('/cleanup/<userid>', methods=['DELETE'])
 def cleanup_user_files(userid):
@@ -539,6 +561,178 @@ def cleanup_user_files(userid):
         return jsonify({'message': f'Cleaned up files for user {userid}'}), 200
     except Exception as e:
         return jsonify({'error': f'Cleanup failed: {e}'}), 500
+    
 
 
+# Updated routes with 'user' and 'teacher' roles
 
+@app.route('/api/admin/users', methods=['GET'])
+def get_all_users():
+    """Get all users with role information"""
+    try:
+        cursor = con.cursor(dictionary=True)
+        
+        # Query to get all users with role column
+        cursor.execute("""
+            SELECT userid, username, email, role_type
+            FROM users 
+            WHERE email != 'admin@apsit.edu.in'  # Exclude admin from the list
+            ORDER BY userid DESC
+        """)
+        users = cursor.fetchall()
+        cursor.close()
+        
+        return jsonify({
+            'success': True,
+            'users': users
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/admin/add-user', methods=['POST'])
+def add_user():
+    """Add new user with role"""
+    try:
+        data = request.json
+        
+        # Validate required fields
+        required_fields = ['username', 'email', 'password']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    'success': False,
+                    'error': f'Missing required field: {field}'
+                }), 400
+        
+        username = data['username'].strip()
+        email = data['email'].strip().lower()
+        password = data['password']
+        role_type = data.get('role_type', 'user')  # Default to user
+        
+        # Validate role type
+        if role_type not in ['user', 'teacher']:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid role type. Must be user or teacher'
+            }), 400
+        
+        # Validate email format
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email):
+            return jsonify({
+                'success': False,
+                'error': 'Invalid email format'
+            }), 400
+        
+        # Check if email already exists
+        cursor = con.cursor()
+        cursor.execute("SELECT userid FROM users WHERE email = %s", (email,))
+        existing_user = cursor.fetchone()
+        
+        if existing_user:
+            cursor.close()
+            return jsonify({
+                'success': False,
+                'error': 'Email already exists'
+            }), 409
+        
+        # Hash password
+        hashed_password = generate_password_hash(password)
+        
+        # Insert user with role
+        cursor.execute(
+            "INSERT INTO users (username, email, passwordhash, role_type) VALUES (%s, %s, %s, %s)",
+            (username, email, hashed_password, role_type)
+        )
+        
+        user_id = cursor.lastrowid
+        con.commit()
+        cursor.close()
+        
+        return jsonify({
+            'success': True,
+            'message': 'User added successfully',
+            'user': {
+                'userid': user_id,
+                'username': username,
+                'email': email,
+                'role_type': role_type
+            }
+        }), 201
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/admin/users/<int:user_id>/role', methods=['PUT'])
+def update_user_role(user_id):
+    """Update user role (user/teacher)"""
+    try:
+        data = request.json
+        
+        # Validate required field
+        if 'role_type' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Missing role_type field'
+            }), 400
+        
+        role_type = data['role_type']
+        
+        # Validate role type
+        if role_type not in ['user', 'teacher']:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid role type. Must be user or teacher'
+            }), 400
+        
+        cursor = con.cursor(dictionary=True)
+        
+        # Check if user exists and is not admin
+        cursor.execute("SELECT * FROM users WHERE userid = %s", (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            cursor.close()
+            return jsonify({
+                'success': False,
+                'error': 'User not found'
+            }), 404
+        
+        # Prevent changing admin role
+        if user['email'] == 'admin@apsit.edu.in':
+            cursor.close()
+            return jsonify({
+                'success': False,
+                'error': 'Cannot change admin role'
+            }), 400
+        
+        # Update user role
+        cursor.execute(
+            "UPDATE users SET role_type = %s WHERE userid = %s",
+            (role_type, user_id)
+        )
+        
+        con.commit()
+        cursor.close()
+        
+        return jsonify({
+            'success': True,
+            'message': f'User role updated to {role_type}',
+            'user': {
+                'userid': user_id,
+                'role_type': role_type
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500

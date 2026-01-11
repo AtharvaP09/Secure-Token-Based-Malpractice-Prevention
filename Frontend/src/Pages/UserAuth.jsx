@@ -3,11 +3,9 @@ import API from "../api";
 import { useNavigate } from "react-router-dom";
 import "./Styles/UserAuth.css";
 import LogoTransparent from '../assets/LogoTransparent.png';
-//React Icons Visit this website for more --> https://react-icons.github.io/react-icons/
 import { FaUserAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
-import { FaShield } from "react-icons/fa6";
 
 function UserAuth() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -36,7 +34,6 @@ function UserAuth() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    // Clear message when user starts typing
     if (message) setMessage("");
   };
 
@@ -51,17 +48,28 @@ function UserAuth() {
         res = await UserLogin({ email: form.email, password: form.password });
         console.log("Login Response:", res);
 
-        // ✅ Save token and username in session storage
+        // Save user info in session storage
         sessionStorage.setItem("token", JSON.stringify(res.webtoken));
         sessionStorage.setItem("username", res.username);  
-        sessionStorage.setItem("user_id", res.user_id);    
+        sessionStorage.setItem("user_id", res.user_id);
+        sessionStorage.setItem("role", res.role);
+        sessionStorage.setItem("email", res.email);
 
-        // Redirect to dashboard
-        navigate("/dashboard");
+        // Check if admin and redirect accordingly
+        if (res.role === 'admin') {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
+        // Prevent registration with admin email
+        if (form.email.toLowerCase() === "admin@apsit.edu.in") {
+          setMessage("Cannot register with admin email address");
+          return;
+        }
+        
         res = await UserRegistration(form);
         setMessage(res.message);
-        // Switch to login after successful registration
         setTimeout(() => setIsLogin(true), 2000);
       }
     } catch (err) {
@@ -90,12 +98,6 @@ function UserAuth() {
           <h2 className="auth-title">
             {isLogin ? "Welcome Back!" : "Create Account!"}
           </h2>
-          {/* <p className="auth-subtitle">
-            {isLogin 
-              ? "Sign in to access your secure dashboard" 
-              : "R"
-            }
-          </p> */}
         </div>
 
         {/* Form */}
@@ -147,20 +149,16 @@ function UserAuth() {
 
           <button 
             type="submit" 
-            className={`auth-button ${isLoading ? 'loading' : ''}`}
+            className="auth-button"
             disabled={isLoading}
           >
-            {isLoading ? (
-              <div className="spinner"></div>
-            ) : (
-              isLogin ? "Sign In" : "Create Account"
-            )}
+            {isLoading ? "Processing..." : (isLogin ? "Sign In" : "Create Account")}
           </button>
         </form>
 
         {/* Message */}
         {message && (
-          <div className={`message ${message.includes('wrong') || message.includes('error') ? 'error' : 'success'}`}>
+          <div className={`message ${message.includes('wrong') || message.includes('error') || message.includes('Cannot') ? 'error' : 'success'}`}>
             {message}
           </div>
         )}
@@ -183,22 +181,6 @@ function UserAuth() {
             </button>
           </p>
         </div>
-
-        {/* Features */}
-        {/* <div className="auth-features">
-          <div className="feature-item">
-            <span className="feature-icon">🔒</span>
-            <span>Secure Authentication</span>
-          </div>
-          <div className="feature-item">
-            <span className="feature-icon">🚀</span>
-            <span>Military-grade Security</span>
-          </div>
-          <div className="feature-item">
-            <span className="feature-icon">📊</span>
-            <span>Real-time Monitoring</span>
-          </div>
-        </div> */}
       </div>
     </div>
   );

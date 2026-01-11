@@ -3,12 +3,13 @@ import './App.css';
 import UserAuth from "./Pages/UserAuth.jsx";
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import GetToken from './Pages/GetToken.jsx';
+import GetToken from './pages/GetToken.jsx';
 import PairDropDashboard from './Pages/PairDropDashboard.jsx'; // <-- new PairDrop dashboard
 import Landing from './Pages/Landing.jsx';
 import ProtectedRoute from './ProtectedRoute';
 import PairDropRoom from './Pages/PairDropRoom.jsx'; // <-- new PairDrop room
 import Submissions from './Pages/Submissions.jsx';
+import AdminPanel from './Pages/AdminPanel.jsx';
 
 function App() {
   // const location = useLocation();
@@ -38,6 +39,7 @@ function App() {
         
         <Route path="/gettoken" element={<GetToken />} />
         
+        <Route path="/admin" element={<AdminPanel />} />
         <Route
           path="/dashboard"
           element={
