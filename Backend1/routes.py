@@ -542,16 +542,28 @@ def handleRoom():
 
     return jsonify({'data' : data})
 
-@app.route("/api/admin/users/<int:userid>", methods=["DELETE"])
+@app.route('/api/admin/users/<int:userid>', methods=['DELETE'])
 def delete_user(userid):
     try:
         cursor = con.cursor()
-        cursor.execute("DELETE FROM users WHERE userid = %s", (userid,))
+        cursor.execute(
+            "DELETE FROM users WHERE userid = %s AND email != 'admin@apsit.edu.in'",
+            (userid,)
+        )
         con.commit()
         cursor.close()
-        return jsonify({"message": "User deleted"}), 200
+
+        return jsonify({
+            'success': True,
+            'message': 'User deleted successfully'
+        }), 200
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 
     
 # Helper function to clean up files (if needed separately)
