@@ -51,7 +51,7 @@ function UserAuth() {
         // Save user info in session storage
         sessionStorage.setItem("token", JSON.stringify(res.webtoken));
         sessionStorage.setItem("username", res.username);  
-        sessionStorage.setItem("user_id", res.user_id);
+        sessionStorage.setItem("userid", res.userid);
         sessionStorage.setItem("role", res.role);
         sessionStorage.setItem("email", res.email);
 

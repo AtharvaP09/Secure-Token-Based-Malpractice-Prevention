@@ -73,7 +73,7 @@ con.commit()
 cursor1.close()
 
 # Configure CORS
-CORS(app, origins="*", methods=["GET", "POST"], allow_headers=["Content-Type", "Authorization"])
+CORS(app, origins="*", methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type", "Authorization"])
 
 # Database configuration for SQLAlchemy
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///project.db'

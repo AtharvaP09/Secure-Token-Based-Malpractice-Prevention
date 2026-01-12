@@ -171,7 +171,7 @@ def login():
             
             return jsonify({
                 "message": "Admin login successful",
-                "user_id": "admin",
+                "userid": "admin",
                 "username": "Administrator",
                 "role": "admin",
                 "email": "admin@apsit.edu.in",
@@ -203,7 +203,7 @@ def login():
 
     return jsonify({
         "message": "Login successful",
-        "user_id": res['userid'],
+        "userid": res['userid'],
         "username": res['username'],
         "role": "user",
         "email": email,
@@ -541,6 +541,18 @@ def handleRoom():
     
 
     return jsonify({'data' : data})
+
+@app.route("/api/admin/users/<int:userid>", methods=["DELETE"])
+def delete_user(userid):
+    try:
+        cursor = con.cursor()
+        cursor.execute("DELETE FROM users WHERE userid = %s", (userid,))
+        con.commit()
+        cursor.close()
+        return jsonify({"message": "User deleted"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
     
 # Helper function to clean up files (if needed separately)
 @app.route('/cleanup/<userid>', methods=['DELETE'])
@@ -649,7 +661,7 @@ def add_user():
             (username, email, hashed_password, role_type)
         )
         
-        user_id = cursor.lastrowid
+        userid = cursor.lastrowid
         con.commit()
         cursor.close()
         
@@ -657,7 +669,7 @@ def add_user():
             'success': True,
             'message': 'User added successfully',
             'user': {
-                'userid': user_id,
+                'userid': userid,
                 'username': username,
                 'email': email,
                 'role_type': role_type
@@ -670,8 +682,8 @@ def add_user():
             'error': str(e)
         }), 500
 
-@app.route('/api/admin/users/<int:user_id>/role', methods=['PUT'])
-def update_user_role(user_id):
+@app.route('/api/admin/users/<int:userid>/role', methods=['PUT'])
+def update_user_role(userid):
     """Update user role (user/teacher)"""
     try:
         data = request.json
@@ -695,7 +707,7 @@ def update_user_role(user_id):
         cursor = con.cursor(dictionary=True)
         
         # Check if user exists and is not admin
-        cursor.execute("SELECT * FROM users WHERE userid = %s", (user_id,))
+        cursor.execute("SELECT * FROM users WHERE userid = %s", (userid,))
         user = cursor.fetchone()
         
         if not user:
@@ -716,7 +728,7 @@ def update_user_role(user_id):
         # Update user role
         cursor.execute(
             "UPDATE users SET role_type = %s WHERE userid = %s",
-            (role_type, user_id)
+            (role_type, userid)
         )
         
         con.commit()
@@ -726,7 +738,7 @@ def update_user_role(user_id):
             'success': True,
             'message': f'User role updated to {role_type}',
             'user': {
-                'userid': user_id,
+                'userid': userid,
                 'role_type': role_type
             }
         })
