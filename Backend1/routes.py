@@ -760,3 +760,25 @@ def update_user_role(userid):
             'success': False,
             'error': str(e)
         }), 500
+    
+
+
+@app.route('/api/realtime', methods=['POST'])
+def realtime():
+    data = request.get_json(silent=True)
+
+    if not data or "payload" not in data:
+        return jsonify({"error": "Invalid payload"}), 400
+
+    payload = data["payload"]  # e.g. "DNS:google.com"
+
+    # Optional: split tag and info
+    if ":" in payload:
+        tag, info = payload.split(":", 1)
+    else:
+        tag, info = "UNKNOWN", payload
+
+    print("Tag:", tag)
+    print("Info:", info)
+
+    return jsonify({"status": "ok"}), 200
