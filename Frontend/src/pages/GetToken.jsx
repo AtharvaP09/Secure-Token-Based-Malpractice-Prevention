@@ -5,9 +5,12 @@ function GetToken({ roomid }) {
   const [loading, setLoading] = useState(false);
 
   const getToken = async () => {
-    const userid = sessionStorage.getItem('user_id');
+    const userid = sessionStorage.getItem('userid');
     const username = sessionStorage.getItem('username');
     const token = sessionStorage.getItem('token');
+
+    console.log(userid, username, token);
+    
 
     if (!userid || !username) {
       alert("Please log in first");
