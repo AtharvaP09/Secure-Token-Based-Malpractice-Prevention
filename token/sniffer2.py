@@ -148,7 +148,7 @@ def writeHash():
     r = file.read()
     print(r)
 
-SERVER_URL = "http://localhost:3000/log"  # your API endpoint
+SERVER_URL = "http://127.0.0.1:5643/api/realtime"  # your API endpoint
 
 def writeToFile(tag, info):
     # payload = encryptSubs(f"{tag}:{info}<<SEP>>", emap)
