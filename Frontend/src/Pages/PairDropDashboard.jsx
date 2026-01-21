@@ -16,6 +16,11 @@ function CreateRoomModal({ onClose, onCreate }) {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  
+  // New state variables
+  const [tokenType, setTokenType] = useState("passive");
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [videoEnabled, setVideoEnabled] = useState(true);
 
   useEffect(() => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -65,7 +70,16 @@ function CreateRoomModal({ onClose, onCreate }) {
     
     if (!dur) return alert("Please set duration");
     
-    onCreate({ roomId, password, restricted, startTime, duration: dur });
+    onCreate({ 
+      roomId, 
+      password, 
+      restricted, 
+      startTime, 
+      duration: dur,
+      tokenType,
+      audioEnabled,
+      videoEnabled
+    });
     onClose();
   };
 
@@ -93,6 +107,80 @@ function CreateRoomModal({ onClose, onCreate }) {
               onChange={(e) => setPassword(e.target.value)} 
             />
           </div>
+
+          {/* New Token Type Selection */}
+          <div className="eg-form-group">
+            <label>Token Type</label>
+            <div className="eg-radio-group">
+              <label className="eg-radio-label">
+                <input
+                  type="radio"
+                  name="tokenType"
+                  value="passive"
+                  checked={tokenType === "passive"}
+                  onChange={(e) => setTokenType(e.target.value)}
+                />
+                <span className="eg-radio-custom"></span>
+                <div className="eg-radio-content">
+                  <span className="eg-radio-title">Passive Monitoring</span>
+                  <span className="eg-radio-description">Periodic screenshots and activity logs</span>
+                </div>
+              </label>
+              
+              <label className="eg-radio-label">
+                <input
+                  type="radio"
+                  name="tokenType"
+                  value="realtime"
+                  checked={tokenType === "realtime"}
+                  onChange={(e) => setTokenType(e.target.value)}
+                />
+                <span className="eg-radio-custom"></span>
+                <div className="eg-radio-content">
+                  <span className="eg-radio-title">Real-time Monitoring</span>
+                  <span className="eg-radio-description">Live screen sharing and continuous monitoring</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* Media Options */}
+          {/* <div className="eg-form-group">
+            <label>Media Settings</label>
+            <div className="eg-switch-group">
+              <div className="eg-switch-item">
+                <span className="eg-switch-label">
+                  <span className="eg-switch-icon">🎤</span>
+                  Audio Monitoring
+                  <span className="eg-switch-description">Microphone access for proctoring</span>
+                </span>
+                <label className="eg-switch">
+                  <input
+                    type="checkbox"
+                    checked={audioEnabled}
+                    onChange={(e) => setAudioEnabled(e.target.checked)}
+                  />
+                  <span className="eg-switch-slider"></span>
+                </label>
+              </div>
+              
+              <div className="eg-switch-item">
+                <span className="eg-switch-label">
+                  <span className="eg-switch-icon">📹</span>
+                  Video Monitoring
+                  <span className="eg-switch-description">Webcam access for proctoring</span>
+                </span>
+                <label className="eg-switch">
+                  <input
+                    type="checkbox"
+                    checked={videoEnabled}
+                    onChange={(e) => setVideoEnabled(e.target.checked)}
+                  />
+                  <span className="eg-switch-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div> */}
 
           <div className="eg-form-group">
             <label>Restricted AI Websites (Optional)</label>

@@ -16,8 +16,6 @@ import base64
 import random
 import string
 
-
-
 def encrypt(plaintext: str, key_str: str, iv_str: str) -> str:
     
     # Derive AES key (32 bytes) and IV (16 bytes)

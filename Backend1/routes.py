@@ -563,9 +563,8 @@ def delete_user(userid):
             'success': False,
             'error': str(e)
         }), 500
-
-
     
+
 # Helper function to clean up files (if needed separately)
 @app.route('/cleanup/<userid>', methods=['DELETE'])
 def cleanup_user_files(userid):

@@ -595,3 +595,246 @@ body {
   background: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
 }
+/* Radio Button Styles - Improved for better selection visibility */
+.eg-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.eg-radio-label {
+  display: flex;
+  align-items: flex-start;
+  padding: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.eg-radio-label:hover {
+  border-color: var(--primary-purple);
+  background: rgba(102, 126, 234, 0.08);
+}
+
+.eg-radio-label input[type="radio"] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  right: 100px;
+}
+
+.eg-radio-custom {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--text-secondary);
+  border-radius: 50%;
+  margin-right: 15px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+/* Selected state - Much more prominent */
+.eg-radio-label input[type="radio"]:checked ~ .eg-radio-custom {
+  border-color: var(--primary-purple);
+  background: var(--primary-purple);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+}
+
+.eg-radio-label input[type="radio"]:checked + .eg-radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+}
+
+/* Entire card highlight when selected */
+.eg-radio-label input[type="radio"]:checked ~ * {
+  /* This affects everything after the radio input */
+}
+
+.eg-radio-label input[type="radio"]:checked {
+  /* This selector won't work directly on the hidden input */
+}
+
+/* Better way: Use sibling selector on the entire label */
+.eg-radio-label:has(input[type="radio"]:checked) {
+  border-color: var(--primary-purple);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.1));
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+}
+
+.eg-radio-content {
+  flex: 1;
+}
+
+.eg-radio-title {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  font-size: 1.05rem;
+}
+
+.eg-radio-description {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: ;
+}
+
+/* Highlight text when selected */
+.eg-radio-label:has(input[type="radio"]:checked) .eg-radio-title {
+  color: var(--primary-purple);
+  font-weight: 700;
+}
+
+.eg-radio-label:has(input[type="radio"]:checked) .eg-radio-description {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Switch Styles - Improved */
+.eg-switch-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.eg-switch-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+/* Highlight when switch is ON */
+.eg-switch-item:has(input[type="checkbox"]:checked) {
+  border-color: var(--primary-purple);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.1));
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.15);
+}
+
+.eg-switch-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eg-switch-icon {
+  font-size: 1.3rem;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.eg-switch-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+/* Make description brighter when ON */
+.eg-switch-item:has(input[type="checkbox"]:checked) .eg-switch-description {
+  color: rgba(255, 255, 255, 0.9);
+  opacity: 1;
+}
+
+.eg-switch {
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.eg-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.eg-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #444, #2a2a2a);
+  transition: .4s;
+  border-radius: 34px;
+  border: 2px solid var(--border-color);
+}
+
+.eg-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 24px;
+  width: 24px;
+  left: 4px;
+  bottom: 2px;
+  background: linear-gradient(45deg, #888, #aaa);
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.eg-switch input:checked + .eg-eg-switch-slider {
+  background: linear-gradient(45deg, var(--primary-purple), var(--primary-dark));
+  border-color: var(--primary-purple);
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+.eg-switch input:checked + .eg-switch-slider:before {
+  transform: translateX(30px);
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Add ON/OFF labels to switch */
+/* .eg-switch::after {
+  content: attr(data-off);
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.eg-switch::before {
+  content: attr(data-on);
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.eg-switch input:checked + .eg-switch-slider ~ .eg-switch::after {
+  opacity: 0;
+}
+
+.eg-switch input:checked + .eg-switch-slider ~ .eg-switch::before {
+  opacity: 1;
+} */
