@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import socket from "../socket";
 import "./Styles/PairDrop.css";
 import LogoTransparent from '../assets/LogoTransparent.png';
+import { FaSignOutAlt } from "react-icons/fa";
 
 // Inline CreateRoomModal with flashy purple styling
 function CreateRoomModal({ onClose, onCreate }) {
@@ -16,6 +17,11 @@ function CreateRoomModal({ onClose, onCreate }) {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  
+  // New state variables
+  const [tokenType, setTokenType] = useState("passive");
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [videoEnabled, setVideoEnabled] = useState(true);
 
   useEffect(() => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -65,7 +71,16 @@ function CreateRoomModal({ onClose, onCreate }) {
     
     if (!dur) return alert("Please set duration");
     
-    onCreate({ roomId, password, restricted, startTime, duration: dur });
+    onCreate({ 
+      roomId, 
+      password, 
+      restricted, 
+      startTime, 
+      duration: dur,
+      tokenType,
+      audioEnabled,
+      videoEnabled
+    });
     onClose();
   };
 
@@ -93,6 +108,80 @@ function CreateRoomModal({ onClose, onCreate }) {
               onChange={(e) => setPassword(e.target.value)} 
             />
           </div>
+
+          {/* New Token Type Selection */}
+          <div className="eg-form-group">
+            <label>Token Type</label>
+            <div className="eg-radio-group">
+              <label className="eg-radio-label">
+                <input
+                  type="radio"
+                  name="tokenType"
+                  value="passive"
+                  checked={tokenType === "passive"}
+                  onChange={(e) => setTokenType(e.target.value)}
+                />
+                <span className="eg-radio-custom"></span>
+                <div className="eg-radio-content">
+                  <span className="eg-radio-title">Passive Monitoring</span>
+                  <span className="eg-radio-description">Periodic screenshots and activity logs</span>
+                </div>
+              </label>
+              
+              <label className="eg-radio-label">
+                <input
+                  type="radio"
+                  name="tokenType"
+                  value="realtime"
+                  checked={tokenType === "realtime"}
+                  onChange={(e) => setTokenType(e.target.value)}
+                />
+                <span className="eg-radio-custom"></span>
+                <div className="eg-radio-content">
+                  <span className="eg-radio-title">Real-time Monitoring</span>
+                  <span className="eg-radio-description">Live screen sharing and continuous monitoring</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* Media Options - Commented out as in original */}
+          {/* <div className="eg-form-group">
+            <label>Media Settings</label>
+            <div className="eg-switch-group">
+              <div className="eg-switch-item">
+                <span className="eg-switch-label">
+                  <span className="eg-switch-icon">🎤</span>
+                  Audio Monitoring
+                  <span className="eg-switch-description">Microphone access for proctoring</span>
+                </span>
+                <label className="eg-switch">
+                  <input
+                    type="checkbox"
+                    checked={audioEnabled}
+                    onChange={(e) => setAudioEnabled(e.target.checked)}
+                  />
+                  <span className="eg-switch-slider"></span>
+                </label>
+              </div>
+              
+              <div className="eg-switch-item">
+                <span className="eg-switch-label">
+                  <span className="eg-switch-icon">📹</span>
+                  Video Monitoring
+                  <span className="eg-switch-description">Webcam access for proctoring</span>
+                </span>
+                <label className="eg-switch">
+                  <input
+                    type="checkbox"
+                    checked={videoEnabled}
+                    onChange={(e) => setVideoEnabled(e.target.checked)}
+                  />
+                  <span className="eg-switch-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div> */}
 
           <div className="eg-form-group">
             <label>Restricted AI Websites (Optional)</label>
@@ -262,11 +351,16 @@ function JoinRoomModal({ onClose, onJoin }) {
 export default function PairDropDashboard() {
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
+  const [userRole, setUserRole] = useState(""); // State for user role
 
   const navigate = useNavigate();
   const username = sessionStorage.getItem("username") || "Guest";
 
   useEffect(() => {
+    // Get user role from sessionStorage
+    const role = sessionStorage.getItem("userRole") || "user";
+    setUserRole(role);
+    
     socket.on("room_created", (data) => {
       navigate(`/room/${data.roomId}`, { 
         state: { 
@@ -303,6 +397,29 @@ export default function PairDropDashboard() {
     navigate(`/room/${roomId}`, { state: { username, password } });
   };
 
+  // Logout function
+  const handleLogout = () => {
+    // Clear all session storage
+    sessionStorage.clear();
+    
+    // Disconnect socket if connected
+    if (socket.connected) {
+      socket.disconnect();
+    }
+    
+    // Navigate to login page
+    navigate("/");
+  };
+
+  // Helper functions to determine user type
+  const isTeacher = userRole === "teacher";
+  const isStudent = userRole === "user";
+  const isAdmin = userRole === "admin";
+
+  // Determine which buttons to show
+  const showCreateButton = isTeacher || isAdmin;
+  const showJoinButton = isStudent || isAdmin;
+
   return (
     <div className="eg-dashboard">
       {/* Animated Background */}
@@ -319,7 +436,14 @@ export default function PairDropDashboard() {
           <span className="eg-brand"></span>
         </div>
         <div className="eg-header-right">
-          <div className="eg-user-info">Welcome, <strong>{username}</strong></div>
+          <div className="eg-user-info">
+            Welcome, <strong>{username}</strong> 
+            <span className="eg-user-role">({userRole.charAt(0).toUpperCase() + userRole.slice(1)})</span>
+          </div>
+          <button className="eg-logout-btn" onClick={handleLogout} title="Logout">
+            <FaSignOutAlt className="eg-logout-icon" />
+            <span className="eg-logout-text">Logout</span>
+          </button>
         </div>
       </div>
 
@@ -328,25 +452,59 @@ export default function PairDropDashboard() {
         <div className="eg-hero-section">
           <div className="eg-hero-content">
             <h1 className="eg-hero-title">
-            <span className="eg-gradient-text">Secure Exam Monitoring</span>
+              <span className="eg-gradient-text">Secure Exam Monitoring</span>
             </h1>
             <p className="eg-hero-subtitle">
               Advanced anti-cheating technology with military-grade security and real-time monitoring
             </p>
             
             <div className="eg-action-buttons">
-              <button className="eg-primary-btn flashy-btn" onClick={() => setShowCreate(true)}>
-                <span className="eg-btn-icon"></span>
-                Create New Room
-                <div className="eg-btn-glow"></div>
-              </button>
-              <button className="eg-secondary-btn flashy-btn" onClick={() => setShowJoin(true)}>
-                <span className="eg-btn-icon"></span>
-                Join Existing Room
-                <div className="eg-btn-glow"></div>
-              </button>
+              {/* Show Create Room button only for teachers and admin */}
+              {showCreateButton && (
+                <button className="eg-primary-btn flashy-btn" onClick={() => setShowCreate(true)}>
+                  <span className="eg-btn-icon"></span>
+                  Create New Room
+                  <div className="eg-btn-glow"></div>
+                </button>
+              )}
+              
+              {/* Show Join Room button only for students and admin */}
+              {showJoinButton && (
+                <button className="eg-secondary-btn flashy-btn" onClick={() => setShowJoin(true)}>
+                  <span className="eg-btn-icon"></span>
+                  Join Existing Room
+                  <div className="eg-btn-glow"></div>
+                </button>
+              )}
+              
+              {/* Show message if no buttons are available */}
+              {!showCreateButton && !showJoinButton && (
+                <div className="eg-no-access-message">
+                  <p>You don't have permission to create or join rooms. Please contact administrator.</p>
+                </div>
+              )}
             </div>
 
+            {/* Optional: Role-based guidance */}
+            {/* <div className="eg-role-guidance">
+              {isTeacher && (
+                <p className="eg-role-hint">
+                  <strong>Teacher Mode:</strong> Create exam rooms and monitor student activities.
+                </p>
+              )}
+              {isStudent && (
+                <p className="eg-role-hint">
+                  <strong>Student Mode:</strong> Join exam rooms using the Room ID and password provided by your teacher.
+                </p>
+              )}
+              {isAdmin && (
+                <p className="eg-role-hint">
+                  <strong>Administrator Mode:</strong> Full access to create and join rooms.
+                </p>
+              )}
+            </div> */}
+
+            {/* Features Grid - Commented out as in original */}
             {/* <div className="eg-features-grid">
               <div className="eg-feature-card">
                 <div className="eg-feature-icon">🔒</div>
@@ -368,9 +526,13 @@ export default function PairDropDashboard() {
         </div>
       </div>
 
-      {/* Modals */}
-      {showCreate && <CreateRoomModal onClose={() => setShowCreate(false)} onCreate={handleCreate} />}
-      {showJoin && <JoinRoomModal onClose={() => setShowJoin(false)} onJoin={handleJoin} />}
+      {/* Modals - Conditionally render based on role */}
+      {showCreate && showCreateButton && (
+        <CreateRoomModal onClose={() => setShowCreate(false)} onCreate={handleCreate} />
+      )}
+      {showJoin && showJoinButton && (
+        <JoinRoomModal onClose={() => setShowJoin(false)} onJoin={handleJoin} />
+      )}
     </div>
   );
 }

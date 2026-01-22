@@ -52,19 +52,29 @@ function UserAuth() {
         sessionStorage.setItem("token", JSON.stringify(res.webtoken));
         sessionStorage.setItem("username", res.username);  
         sessionStorage.setItem("userid", res.userid);
-        sessionStorage.setItem("role", res.role);
+        sessionStorage.setItem("role", res.role);  // This should now be 'user' or 'teacher'
+        sessionStorage.setItem("userRole", res.role); // Add this for PairDropDashboard
         sessionStorage.setItem("email", res.email);
 
-        // Check if admin and redirect accordingly
+        console.log("User role stored:", res.role);
+        
+        // Check role and redirect accordingly
         if (res.role === 'admin') {
           navigate("/admin");
+        } else if (res.role === 'teacher') {
+          navigate("/dashboard");  // Teachers go to dashboard
+        } else if (res.role === 'user') {
+          navigate("/dashboard");  // Students also go to dashboard (will see different options)
         } else {
+          // Default fallback
+          sessionStorage.setItem("userRole", "user");
           navigate("/dashboard");
         }
       } else {
         // Prevent registration with admin email
         if (form.email.toLowerCase() === "admin@apsit.edu.in") {
           setMessage("Cannot register with admin email address");
+          setIsLoading(false);
           return;
         }
         
@@ -73,6 +83,7 @@ function UserAuth() {
         setTimeout(() => setIsLogin(true), 2000);
       }
     } catch (err) {
+      console.error("Auth error:", err);
       setMessage(err.message || "Something went wrong");
     } finally {
       setIsLoading(false);
@@ -98,6 +109,9 @@ function UserAuth() {
           <h2 className="auth-title">
             {isLogin ? "Welcome Back!" : "Create Account!"}
           </h2>
+          <p className="auth-subtitle">
+            {isLogin ? "Sign in to your account" : "Create a new student account"}
+          </p>
         </div>
 
         {/* Form */}
@@ -180,6 +194,13 @@ function UserAuth() {
               {isLogin ? "Sign Up" : "Sign In"}
             </button>
           </p>
+          
+          {/* Note about teacher accounts */}
+          {/* {isLogin && (
+            <p className="auth-note">
+              <small>Teacher accounts must be created by administrator</small>
+            </p>
+          )} */}
         </div>
       </div>
     </div>

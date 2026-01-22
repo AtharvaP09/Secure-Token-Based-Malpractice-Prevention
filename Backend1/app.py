@@ -93,4 +93,4 @@ from ws_routes import * # Import WebSocket routes
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Creates SQLite tables if not exists
-    socketio.run(app, port=5643, debug=True)
+    socketio.run(app , host = "0.0.0.0", port=5643 , debug=True)
