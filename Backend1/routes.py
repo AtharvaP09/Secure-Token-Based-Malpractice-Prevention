@@ -18,6 +18,20 @@ import random
 import jwt
 from functools import wraps
 import re 
+from app import socketio
+
+def is_domain_banned(domain: str, banned_list: list) -> bool:
+    if not domain:
+        return False
+
+    domain = domain.lower().strip()
+
+    for b in banned_list:
+        b = b.lower().strip()
+        if b and b in domain:
+            return True
+
+    return False
 
 
 def randomString(length):
@@ -767,18 +781,55 @@ def update_user_role(userid):
 def realtime():
     data = request.get_json(silent=True)
 
-    if not data or "payload" not in data:
-        return jsonify({"error": "Invalid payload"}), 400
+    if not data:
+        return jsonify({"error": "Invalid JSON"}), 400
 
-    payload = data["payload"]  # e.g. "DNS:google.com"
+    required = ["name", "userid", "roomid", "tag", "info", "timestamp"]
+    missing = [k for k in required if k not in data]
 
-    # Optional: split tag and info
-    if ":" in payload:
-        tag, info = payload.split(":", 1)
-    else:
-        tag, info = "UNKNOWN", payload
+    if missing:
+        return jsonify({"error": "Missing fields", "missing": missing}), 400
 
-    print("Tag:", tag)
-    print("Info:", info)
+    room_id = data["roomid"]
+    tag = data["tag"]
+    info = data["info"]
 
-    return jsonify({"status": "ok"}), 200
+    banned = False
+    banned_list = []
+
+    # 🔒 Only check domain rules if this is a domain log
+    if tag == "domain":
+        cursor = None
+        try:
+            cursor = con.cursor()
+            cursor.execute(
+                "SELECT restricted FROM rooms WHERE room_id = %s;",
+                [room_id]
+            )
+            result = cursor.fetchone()
+
+            if result and result[0]:
+                banned_list = json.loads(result[0])
+                banned = is_domain_banned(info, banned_list)
+
+        except Exception as e:
+            print("Domain check error:", e)
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    # 🔥 Enrich payload
+    data["banned"] = banned
+
+    # 🔥 Emit to admins watching this room
+    socketio.emit(
+        "live_log",
+        data,
+        room=f"logs_{room_id}"
+    )
+
+    return jsonify({
+        "status": "ok",
+        "banned": banned
+    }), 200

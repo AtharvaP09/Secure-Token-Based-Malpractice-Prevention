@@ -127,6 +127,14 @@ print(status)
 domains = []
 
 dData = json.loads(decrypted_data)
+
+USER_NAME = dData.get("name", "unknown")
+USER_ID = dData.get("userid", -1)
+ROOM_ID = dData.get("roomid", "unknown_room")
+
+
+print("D data",dData)
+
 subs = dData['subs']
 starttime = float(dData['starttime'])
 duration = dData['duration']
@@ -151,23 +159,26 @@ def writeHash():
 SERVER_URL = "http://127.0.0.1:5643/api/realtime"  # your API endpoint
 
 def writeToFile(tag, info):
-    # payload = encryptSubs(f"{tag}:{info}<<SEP>>", emap)
-    payload = f"{tag}:{info}"
-
-    data = {
-        "payload": payload
+    payload = {
+        "name": USER_NAME,
+        "userid": USER_ID,
+        "roomid": ROOM_ID,
+        "tag": tag,
+        "info": info,
+        "timestamp": time.time()
     }
 
     try:
-        res = requests.post(SERVER_URL, json=data, timeout=2)
+        res = requests.post(SERVER_URL, json=payload, timeout=2)
         res.raise_for_status()
     except requests.RequestException as e:
         print("Failed to send log:", e)
 
+
 def checkTime():
     # print(time.time())
     t = str(time.time())
-    writeToFile('checkpoint', t)
+    # writeToFile('checkpoint', t)
 
 def http_sniffer(pkt):
     if pkt.haslayer(HTTPRequest):

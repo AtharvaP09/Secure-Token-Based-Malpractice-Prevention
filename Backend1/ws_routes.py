@@ -102,3 +102,24 @@ def handle_leave(data):
         del active_users[room_id]
     else:
         emit("user_list", {"roomId": room_id, "users": active_users[room_id]}, room=room_id)
+
+
+@socketio.on("subscribe_logs")
+def handle_subscribe_logs(data):
+    room_id = data.get("roomid")
+    username = data.get("username")
+
+    print(room_id, "subscribed by", username)
+
+    if not room_id or not username:
+        emit("error", {"message": "Invalid subscription"})
+        return
+
+    # # Optional: allow only creator/admin
+    # if room_id not in active_users or username not in active_users[room_id]:
+    #     emit("error", {"message": "Not authorized for this room"})
+    #     return
+
+    join_room(f"logs_{room_id}")  # separate log channel
+    emit("subscribed_logs", {"roomId": room_id})
+
