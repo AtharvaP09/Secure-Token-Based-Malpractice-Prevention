@@ -145,6 +145,8 @@ def UserRegistration():
     return jsonify({"message": "User registered successfully"}), 201
 
 #User Login
+# In routes.py, update the /UserLogin route:
+
 @app.route("/UserLogin", methods=["POST"])
 def login():
     data = request.get_json()
@@ -180,9 +182,9 @@ def login():
         else:
             return jsonify({"message": "Invalid admin credentials"}), 401
     
-    # Regular user login logic (existing code)
+    # Regular user login logic - UPDATED TO INCLUDE role_type
     cursor = con.cursor(dictionary=True)
-    cursor.execute("select * from users where email = %s;", [email])
+    cursor.execute("SELECT * FROM users WHERE email = %s;", [email])
     res = cursor.fetchall()
     
     if not len(res):
@@ -192,7 +194,14 @@ def login():
     if not check_password_hash(res['passwordhash'], password):
         return jsonify({"message": "Invalid credentials"}), 401
     
-    data = {"public_id": res['userid'], 'username': res['username'], 'role': 'user'}
+    # Get role_type from database, default to 'user' if not present
+    role_type = res.get('role_type', 'user')
+    
+    data = {
+        "public_id": res['userid'], 
+        'username': res['username'], 
+        'role': role_type  # Use the actual role_type from database
+    }
     
     # Generate JWT token for regular user
     webtoken = jwt.encode(
@@ -205,10 +214,12 @@ def login():
         "message": "Login successful",
         "userid": res['userid'],
         "username": res['username'],
-        "role": "user",
+        "role": role_type,  # Return the actual role_type , for role based room logic
         "email": email,
         "webtoken": webtoken
     }), 200
+
+
 def derive_key_and_iv(key_str, iv_str):
 
     key = hashlib.sha256(key_str.encode('utf-8')).digest()  # 32 bytes
