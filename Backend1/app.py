@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-from models import db
+# from models import db
 import os
 import mysql.connector
 from dotenv import load_dotenv
@@ -76,9 +76,9 @@ cursor1.close()
 CORS(app, origins="https://examgaurd.netlify.app", methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type", "Authorization"])
 
 # Database configuration for SQLAlchemy
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///project.db'
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db.init_app(app)
+# app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///project.db'
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# db.init_app(app)
 
 # Setup SocketIO
 socketio = SocketIO(app, cors_allowed_origins="https://examgaurd.netlify.app")
@@ -91,6 +91,6 @@ from routes import * # Import regular routes
 from ws_routes import * # Import WebSocket routes
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Creates SQLite tables if not exists
-    socketio.run(app , host = "0.0.0.0", port=5643 , debug=False)
+    # with app.app_context():
+    #     db.create_all()  # Creates SQLite tables if not exists
+    socketio.run(app , host = "0.0.0.0", port=5643 , debug=True)
