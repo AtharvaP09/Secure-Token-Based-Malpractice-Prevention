@@ -18,6 +18,20 @@ import random
 import jwt
 from functools import wraps
 import re 
+from app import socketio
+
+def is_domain_banned(domain: str, banned_list: list) -> bool:
+    if not domain:
+        return False
+
+    domain = domain.lower().strip()
+
+    for b in banned_list:
+        b = b.lower().strip()
+        if b and b in domain:
+            return True
+
+    return False
 
 
 def randomString(length):
@@ -145,6 +159,8 @@ def UserRegistration():
     return jsonify({"message": "User registered successfully"}), 201
 
 #User Login
+# In routes.py, update the /UserLogin route:
+
 @app.route("/UserLogin", methods=["POST"])
 def login():
     data = request.get_json()
@@ -180,9 +196,9 @@ def login():
         else:
             return jsonify({"message": "Invalid admin credentials"}), 401
     
-    # Regular user login logic (existing code)
+    # Regular user login logic - UPDATED TO INCLUDE role_type
     cursor = con.cursor(dictionary=True)
-    cursor.execute("select * from users where email = %s;", [email])
+    cursor.execute("SELECT * FROM users WHERE email = %s;", [email])
     res = cursor.fetchall()
     
     if not len(res):
@@ -192,7 +208,14 @@ def login():
     if not check_password_hash(res['passwordhash'], password):
         return jsonify({"message": "Invalid credentials"}), 401
     
-    data = {"public_id": res['userid'], 'username': res['username'], 'role': 'user'}
+    # Get role_type from database, default to 'user' if not present
+    role_type = res.get('role_type', 'user')
+    
+    data = {
+        "public_id": res['userid'], 
+        'username': res['username'], 
+        'role': role_type  # Use the actual role_type from database
+    }
     
     # Generate JWT token for regular user
     webtoken = jwt.encode(
@@ -205,10 +228,12 @@ def login():
         "message": "Login successful",
         "userid": res['userid'],
         "username": res['username'],
-        "role": "user",
+        "role": role_type,  # Return the actual role_type , for role based room logic
         "email": email,
         "webtoken": webtoken
     }), 200
+
+
 def derive_key_and_iv(key_str, iv_str):
 
     key = hashlib.sha256(key_str.encode('utf-8')).digest()  # 32 bytes
@@ -766,18 +791,55 @@ def update_user_role(userid):
 def realtime():
     data = request.get_json(silent=True)
 
-    if not data or "payload" not in data:
-        return jsonify({"error": "Invalid payload"}), 400
+    if not data:
+        return jsonify({"error": "Invalid JSON"}), 400
 
-    payload = data["payload"]  # e.g. "DNS:google.com"
+    required = ["name", "userid", "roomid", "tag", "info", "timestamp"]
+    missing = [k for k in required if k not in data]
 
-    # Optional: split tag and info
-    if ":" in payload:
-        tag, info = payload.split(":", 1)
-    else:
-        tag, info = "UNKNOWN", payload
+    if missing:
+        return jsonify({"error": "Missing fields", "missing": missing}), 400
 
-    print("Tag:", tag)
-    print("Info:", info)
+    room_id = data["roomid"]
+    tag = data["tag"]
+    info = data["info"]
 
-    return jsonify({"status": "ok"}), 200
+    banned = False
+    banned_list = []
+
+    # 🔒 Only check domain rules if this is a domain log
+    if tag == "domain":
+        cursor = None
+        try:
+            cursor = con.cursor()
+            cursor.execute(
+                "SELECT restricted FROM rooms WHERE room_id = %s;",
+                [room_id]
+            )
+            result = cursor.fetchone()
+
+            if result and result[0]:
+                banned_list = json.loads(result[0])
+                banned = is_domain_banned(info, banned_list)
+
+        except Exception as e:
+            print("Domain check error:", e)
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    # 🔥 Enrich payload
+    data["banned"] = banned
+
+    # 🔥 Emit to admins watching this room
+    socketio.emit(
+        "live_log",
+        data,
+        room=f"logs_{room_id}"
+    )
+
+    return jsonify({
+        "status": "ok",
+        "banned": banned
+    }), 200

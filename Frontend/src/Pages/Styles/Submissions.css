@@ -73,3 +73,24 @@
   font-style: italic;
   color: #334155;
 }
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.arrow {
+  font-size: 18px;
+}
+
+.user-details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.no-cheats {
+  color: green;
+  font-weight: 500;
+}

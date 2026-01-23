@@ -838,3 +838,147 @@ body {
 .eg-switch input:checked + .eg-switch-slider ~ .eg-switch::before {
   opacity: 1;
 } */
+
+/* ===== Logout Button Styles - Clean & Professional ===== */
+.eg-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e0d6ff;
+  border: 1px solid rgba(224, 214, 255, 0.2);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eg-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(224, 214, 255, 0.4);
+  color: #ffffff;
+}
+
+.eg-logout-btn:active {
+  transform: scale(0.98);
+}
+
+.eg-logout-icon {
+  font-size: 14px;
+}
+
+/* Update header right layout */
+.eg-header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* ===== Role Badge Styling ===== */
+.eg-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eg-user-role {
+  background: rgba(106, 13, 173, 0.15);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #b8a2ff;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(106, 13, 173, 0.3);
+}
+
+/* ===== Role-based Access Message ===== */
+.eg-no-access-message {
+  padding: 20px;
+  background: rgba(255, 59, 48, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  text-align: center;
+  color: #ff8a8a;
+  margin-top: 20px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.eg-no-access-message p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ===== Optional: Clean Role Guidance ===== */
+.eg-role-guidance {
+  margin-top: 25px;
+  padding: 15px;
+  background: rgba(106, 13, 173, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid #6a0dad;
+}
+
+.eg-role-hint {
+  margin: 0;
+  color: #b8a2ff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.eg-role-hint strong {
+  color: #e0d6ff;
+  font-weight: 600;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .eg-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .eg-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .eg-logout-text {
+    display: none;
+    font-size: 16px;
+  }
+  
+  .eg-logout-btn {
+    padding: 10px 14px;
+  }
+  
+  .eg-logout-icon {
+    font-size: 18px;
+  }
+  
+  .eg-user-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .eg-user-role {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .eg-header-right {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .eg-logout-btn {
+    align-self: flex-end;
+  }
+}

@@ -10,6 +10,7 @@ import ProtectedRoute from './ProtectedRoute';
 import PairDropRoom from './Pages/PairDropRoom.jsx'; // <-- new PairDrop room
 import Submissions from './Pages/Submissions.jsx';
 import AdminPanel from './Pages/AdminPanel.jsx';
+import Realtime from './Pages/Realtime.jsx';
 
 function App() {
   // const location = useLocation();
@@ -38,6 +39,7 @@ function App() {
         <Route path="/auth" element={<UserAuth />} />
         
         <Route path="/gettoken" element={<GetToken />} />
+        <Route path="/realtime/:roomid" element={<Realtime />} />
         
         <Route path="/admin" element={<AdminPanel />} />
         <Route
