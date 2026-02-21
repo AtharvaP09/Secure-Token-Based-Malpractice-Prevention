@@ -1,2 +1,7 @@
-venv
-Backend1/instance
+venv/
+__pycache__/
+*.db
+*.log
+*.enc
+build/
+dist/

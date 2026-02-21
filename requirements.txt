@@ -1,0 +1,19 @@
+# Backend
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+websockets
+dnspython
+
+# Tokens
+requests
+psutil
+pywin32
+cryptography
+pyinstaller
+wmi
+keyboard==0.13.5
