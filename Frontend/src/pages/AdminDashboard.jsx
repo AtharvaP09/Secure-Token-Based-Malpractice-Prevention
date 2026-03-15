@@ -97,24 +97,24 @@ const AdminDashboard = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white font-sans">
+        <div className="min-h-screen bg-[#0A0F1C] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0A0F1C] to-black text-white font-sans selection:bg-red-500/30">
             {/* Navbar */}
-            <nav className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-md sticky top-0 z-50">
+            <nav className="border-b border-indigo-900/30 bg-[#0A0F1C]/70 backdrop-blur-xl sticky top-0 z-50 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center space-x-3">
-                            <div className="bg-red-600 p-2 rounded-lg shadow-lg shadow-red-600/20">
+                            <div className="bg-gradient-to-br from-red-500 to-red-700 p-2.5 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.3)] border border-red-400/20">
                                 <Shield className="h-6 w-6 text-white" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight">Admin Portal</span>
+                            <span className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Admin Portal</span>
                         </div>
                         <div className="flex items-center space-x-4">
-                            <div className="text-sm text-gray-400">
-                                <span className="text-gray-200 font-medium">Administrator</span>
+                            <div className="text-sm text-gray-400 hidden sm:block">
+                                <span className="text-indigo-200/80 font-bold bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/20">Administrator</span>
                             </div>
                             <button
                                 onClick={handleLogout}
-                                className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors"
+                                className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-all border border-transparent hover:border-red-500/20"
                                 title="Logout"
                             >
                                 <LogOut className="h-5 w-5" />
@@ -124,104 +124,104 @@ const AdminDashboard = () => {
                 </div>
             </nav>
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
                 <div className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-white">User Management</h1>
-                        <p className="text-gray-400 mt-1">Manage user roles and permissions</p>
+                        <h1 className="text-3xl font-bold text-white tracking-tight drop-shadow-lg text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400">User Management</h1>
+                        <p className="text-indigo-200/60 mt-1 font-medium">Manage user roles and permissions</p>
                     </div>
 
                     <div className="flex items-center gap-4 w-full sm:w-auto">
-                        <div className="relative w-full sm:w-64">
+                        <div className="relative w-full sm:w-64 group">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-5 w-5 text-gray-500" />
+                                <Search className="h-5 w-5 text-indigo-400/50 group-focus-within:text-blue-400 transition-colors" />
                             </div>
                             <input
                                 type="text"
                                 placeholder="Search users..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="block w-full pl-10 pr-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                className="block w-full pl-10 pr-3 py-2.5 bg-[#0A0F1C]/80 border border-indigo-500/20 rounded-xl text-white placeholder-indigo-900/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-inner transition-all font-medium"
                             />
                         </div>
                         <button
                             onClick={() => setCreateModalOpen(true)}
-                            className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors shadow-lg shadow-red-600/20 flex items-center whitespace-nowrap"
+                            className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:scale-[1.02] active:scale-[0.98] flex items-center whitespace-nowrap"
                         >
-                            <span className="mr-2">+</span> Add User
+                            <span className="mr-2 text-lg leading-none">+</span> Add User
                         </button>
                     </div>
                 </div>
 
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
-                        <p className="mt-4 text-gray-400">Loading users...</p>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
+                        <p className="mt-4 text-indigo-200/60 font-medium">Loading users...</p>
                     </div>
                 ) : (
-                    <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden shadow-xl">
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-700">
-                                <thead className="bg-gray-900/50">
+                    <div className="bg-[#131B2F]/60 backdrop-blur-md rounded-2xl border border-indigo-500/10 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                        <div className="overflow-x-auto custom-scrollbar">
+                            <table className="min-w-full divide-y divide-indigo-500/10">
+                                <thead className="bg-[#0A0F1C]/50">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">User</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Current Role</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-indigo-300 uppercase tracking-widest">User</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-indigo-300 uppercase tracking-widest">Email</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-indigo-300 uppercase tracking-widest">Role</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold text-indigo-300 uppercase tracking-widest">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-gray-800 divide-y divide-gray-700">
+                                <tbody className="divide-y divide-indigo-500/10">
                                     {filteredUsers.map((u) => (
-                                        <tr key={u.id} className="hover:bg-gray-700/50 transition-colors">
+                                        <tr key={u.id} className="hover:bg-white/5 transition-colors group">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
-                                                    <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-300 font-bold">
+                                                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-blue-500/20 border border-indigo-500/30 flex items-center justify-center text-blue-300 font-bold shadow-inner">
                                                         {u.username.charAt(0).toUpperCase()}
                                                     </div>
                                                     <div className="ml-4">
-                                                        <div className="text-sm font-medium text-white">{u.username}</div>
+                                                        <div className="text-sm font-bold text-gray-200 group-hover:text-blue-300 transition-colors">{u.username}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-300/70 font-medium">
                                                 {u.email}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${u.role === 'admin' ? 'bg-red-900/50 text-red-200 border border-red-700' :
-                                                    u.role === 'teacher' ? 'bg-purple-900/50 text-purple-200 border border-purple-700' :
-                                                        'bg-green-900/50 text-green-200 border border-green-700'
+                                                <span className={`px-3 py-1 inline-flex text-[10px] font-bold tracking-wider uppercase rounded-full border shadow-sm ${u.role === 'admin' ? 'bg-red-500/10 text-red-400 border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.1)]' :
+                                                    u.role === 'teacher' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.1)]' :
+                                                        'bg-[#131B2F]/60 text-indigo-300 border-indigo-500/20'
                                                     }`}>
-                                                    {u.role.toUpperCase()}
+                                                    {u.role}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 {u.role !== 'admin' && (
-                                                    <div className="flex justify-end space-x-3">
+                                                    <div className="flex justify-end space-x-3 opacity-80 group-hover:opacity-100 transition-opacity">
                                                         {u.role === 'student' ? (
                                                             <button
                                                                 onClick={() => handleRoleUpdate(u.id, 'teacher')}
-                                                                className="text-purple-400 hover:text-purple-300 flex items-center"
+                                                                className="text-purple-400 hover:text-white bg-purple-500/10 hover:bg-purple-500 border border-transparent hover:border-purple-400/50 px-3 py-1.5 rounded-lg flex items-center transition-all shadow-sm"
                                                                 title="Promote to Teacher"
                                                             >
-                                                                <ArrowUpCircle className="w-4 h-4 mr-1" />
+                                                                <ArrowUpCircle className="w-4 h-4 mr-1.5" />
                                                                 Promote
                                                             </button>
                                                         ) : (
                                                             <button
                                                                 onClick={() => handleRoleUpdate(u.id, 'student')}
-                                                                className="text-yellow-400 hover:text-yellow-300 flex items-center"
+                                                                className="text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500 border border-transparent hover:border-blue-400/50 px-3 py-1.5 rounded-lg flex items-center transition-all shadow-sm"
                                                                 title="Demote to Student"
                                                             >
-                                                                <ArrowDownCircle className="w-4 h-4 mr-1" />
+                                                                <ArrowDownCircle className="w-4 h-4 mr-1.5" />
                                                                 Demote
                                                             </button>
                                                         )}
                                                         <button
                                                             onClick={() => handleDeleteUser(u.id)}
-                                                            className="text-red-400 hover:text-red-300 flex items-center ml-2"
+                                                            className="text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 border border-transparent hover:border-red-400/50 p-1.5 rounded-lg flex items-center transition-all shadow-sm"
                                                             title="Delete User"
                                                         >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
                                                         </button>
                                                     </div>
                                                 )}
@@ -230,8 +230,11 @@ const AdminDashboard = () => {
                                     ))}
                                     {filteredUsers.length === 0 && (
                                         <tr>
-                                            <td colSpan="4" className="px-6 py-12 text-center text-gray-400">
-                                                No users found matching your search.
+                                            <td colSpan="4" className="px-6 py-16 text-center text-indigo-300/50 font-medium">
+                                                <div className="flex flex-col items-center justify-center">
+                                                    <Search className="w-8 h-8 mb-3 opacity-50" />
+                                                    No users found matching your search.
+                                                </div>
                                             </td>
                                         </tr>
                                     )}
@@ -244,55 +247,58 @@ const AdminDashboard = () => {
 
             {/* Create User Modal */}
             {createModalOpen && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="bg-gray-800 rounded-xl border border-gray-700 shadow-2xl max-w-md w-full p-6">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-white">Create New User</h2>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity">
+                    <div className="bg-[#131B2F] rounded-3xl border border-indigo-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-md w-full p-8 relative overflow-hidden">
+                        {/* Deco elements */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+
+                        <div className="flex justify-between items-center mb-6 relative z-10">
+                            <h2 className="text-2xl font-bold text-white tracking-tight">Create New User</h2>
                             <button
                                 onClick={() => setCreateModalOpen(false)}
-                                className="text-gray-400 hover:text-white"
+                                className="text-gray-400 hover:text-red-400 bg-white/5 hover:bg-red-500/10 p-2 rounded-xl transition-all"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                         </div>
-                        <form onSubmit={handleCreateUser}>
-                            <div className="space-y-4">
+                        <form onSubmit={handleCreateUser} className="relative z-10">
+                            <div className="space-y-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Username</label>
+                                    <label className="block text-sm font-bold text-indigo-300 mb-2 uppercase tracking-wider">Username</label>
                                     <input
                                         type="text"
                                         required
                                         value={newUser.username}
                                         onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+                                        className="w-full bg-[#0A0F1C]/80 border border-indigo-500/20 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all shadow-inner font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                                    <label className="block text-sm font-bold text-indigo-300 mb-2 uppercase tracking-wider">Email</label>
                                     <input
                                         type="email"
                                         required
                                         value={newUser.email}
                                         onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+                                        className="w-full bg-[#0A0F1C]/80 border border-indigo-500/20 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all shadow-inner font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Password</label>
+                                    <label className="block text-sm font-bold text-indigo-300 mb-2 uppercase tracking-wider">Password</label>
                                     <input
                                         type="password"
                                         required
                                         value={newUser.password}
                                         onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+                                        className="w-full bg-[#0A0F1C]/80 border border-indigo-500/20 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all shadow-inner font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Role</label>
+                                    <label className="block text-sm font-bold text-indigo-300 mb-2 uppercase tracking-wider">Role</label>
                                     <select
                                         value={newUser.role}
                                         onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+                                        className="w-full bg-[#0A0F1C]/80 border border-indigo-500/20 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all shadow-inner font-bold appearance-none cursor-pointer"
                                     >
                                         <option value="student">Student</option>
                                         <option value="teacher">Teacher</option>
@@ -300,17 +306,17 @@ const AdminDashboard = () => {
                                     </select>
                                 </div>
                             </div>
-                            <div className="mt-6 flex justify-end space-x-3">
+                            <div className="mt-8 flex justify-end space-x-4">
                                 <button
                                     type="button"
                                     onClick={() => setCreateModalOpen(false)}
-                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                                    className="px-5 py-3 hover:bg-[#1A233A] text-gray-400 hover:text-white rounded-xl transition-colors font-bold border border-transparent hover:border-gray-700"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium"
+                                    className="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-xl transition-all font-bold shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:scale-[1.02] active:scale-[0.98]"
                                 >
                                     Create User
                                 </button>

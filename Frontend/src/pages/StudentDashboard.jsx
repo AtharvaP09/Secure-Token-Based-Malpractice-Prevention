@@ -97,24 +97,24 @@ const StudentDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white font-sans">
+        <div className="min-h-screen bg-[#0A0F1C] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0A0F1C] to-black text-white font-sans selection:bg-blue-500/30">
             {/* Navbar */}
-            <nav className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-md sticky top-0 z-50">
+            <nav className="border-b border-indigo-900/30 bg-[#0A0F1C]/70 backdrop-blur-xl sticky top-0 z-50 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center space-x-3">
-                            <div className="bg-purple-600 p-2 rounded-lg shadow-lg shadow-purple-600/20">
+                            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2.5 rounded-xl shadow-[0_0_15px_rgba(37,71,244,0.3)] border border-blue-400/20">
                                 <GraduationCap className="h-6 w-6 text-white" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight">Student Portal</span>
+                            <span className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Student Portal</span>
                         </div>
                         <div className="flex items-center space-x-4">
-                            <div className="text-sm text-gray-400">
-                                Logged in as <span className="text-gray-200 font-medium">{user?.sub}</span>
+                            <div className="text-sm font-medium text-indigo-200/60 hidden sm:block">
+                                Logged in as <span className="text-blue-300 font-bold">{user?.sub}</span>
                             </div>
                             <button
                                 onClick={handleLogout}
-                                className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors"
+                                className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-all border border-transparent hover:border-red-500/20"
                                 title="Logout"
                             >
                                 <LogOut className="h-5 w-5" />
@@ -126,45 +126,48 @@ const StudentDashboard = () => {
 
             <main className="max-w-4xl mx-auto px-4 py-12">
                 {!session ? (
-                    <div className="flex flex-col items-center justify-center space-y-8">
-                        <div className="text-center max-w-lg">
-                            <h1 className="text-4xl font-bold text-white mb-4">Join an Exam</h1>
-                            <p className="text-gray-400 text-lg">Enter the room code provided by your instructor to start your secured examination session.</p>
+                    <div className="flex flex-col items-center justify-center space-y-8 relative z-10">
+                        <div className="text-center max-w-lg mb-4">
+                            <h1 className="text-4xl font-bold text-white mb-4 tracking-tight drop-shadow-lg text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400">Join an Exam</h1>
+                            <p className="text-indigo-200/60 text-lg">Enter the room code provided by your instructor to start your secured examination session.</p>
                         </div>
 
-                        <div className="w-full max-w-md bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl">
-                            <form onSubmit={handleJoin} className="space-y-6">
+                        <div className="w-full max-w-md bg-[#131B2F]/60 backdrop-blur-md p-8 rounded-3xl border border-indigo-500/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgba(37,71,244,0.15)] transition-all duration-500 relative overflow-hidden group">
+                             {/* Glass reflection effect */}
+                             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+                            <form onSubmit={handleJoin} className="space-y-6 relative z-10">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-2">Room Code</label>
+                                    <label className="block text-sm font-bold text-indigo-300 mb-2 uppercase tracking-wider">Room Code</label>
                                     <input
                                         type="text"
                                         required
                                         value={roomCode}
                                         onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                                        className="block w-full text-center text-2xl font-mono tracking-widest py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent uppercase placeholder-gray-600"
+                                        className="block w-full text-center text-3xl font-mono tracking-[0.3em] py-4 bg-[#0A0F1C]/80 border border-indigo-500/20 rounded-xl text-blue-400 font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase placeholder-indigo-900/50 shadow-inner transition-all"
                                         placeholder="XB3K9L"
                                         maxLength={6}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-2">Password</label>
+                                    <label className="block text-sm font-bold text-indigo-300 mb-2 uppercase tracking-wider">Password</label>
                                     <input
                                         type="password"
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="block w-full py-3 px-4 bg-gray-900 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-600 transition-colors"
+                                        className="block w-full py-3 px-4 bg-[#0A0F1C]/80 border border-indigo-500/20 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-indigo-900/50 shadow-inner transition-all font-medium"
                                         placeholder="Enter exam password"
                                     />
                                 </div>
 
-                                {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+                                {error && <p className="text-red-400 text-sm text-center font-bold bg-red-500/10 py-2 rounded-lg border border-red-500/20">{error}</p>}
 
                                 <button
                                     type="submit"
                                     disabled={joining || !roomCode}
-                                    className={`w-full py-3 rounded-lg font-bold flex justify-center items-center transition-all ${!roomCode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/25'}`}
+                                    className={`w-full py-4 rounded-xl font-bold flex justify-center items-center transition-all duration-300 ${!roomCode ? 'bg-[#131B2F]/60 text-gray-500 border border-gray-700/50 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(37,71,244,0.4)] hover:scale-[1.02] active:scale-[0.98]'}`}
                                 >
                                     {joining ? 'Joining...' : <>Join Session <ArrowRight className="ml-2 w-5 h-5" /></>}
                                 </button>
@@ -172,41 +175,47 @@ const StudentDashboard = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="max-w-2xl mx-auto">
-                        <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-8 rounded-2xl shadow-2xl text-center">
-                            <div className="mx-auto bg-green-500/10 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                                <CheckCircle className="w-8 h-8 text-green-500" />
+                    <div className="max-w-2xl mx-auto relative z-10">
+                        <div className="bg-[#131B2F]/60 backdrop-blur-xl border border-indigo-500/20 p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-center relative overflow-hidden group">
+                             {/* Glass reflection effect */}
+                             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                             
+                            <div className="mx-auto bg-green-500/10 w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_25px_rgba(34,197,94,0.2)] border border-green-500/20 relative z-10">
+                                <CheckCircle className="w-10 h-10 text-green-400" />
                             </div>
 
-                            <h2 className="text-3xl font-bold text-white mb-2">Successfully Joined!</h2>
-                            <p className="text-gray-400 mb-8">Session ID: <span className="font-mono text-purple-400">#{session.session_id}</span></p>
+                            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 mb-2 relative z-10">Successfully Joined!</h2>
+                            <p className="text-indigo-200/60 mb-8 relative z-10">Session ID: <span className="font-mono text-blue-400 font-bold bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">#{session.session_id}</span></p>
 
-                            <div className="space-y-4">
-                                <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700 text-left">
-                                    <h3 className="text-lg font-semibold text-white mb-2">Next Steps:</h3>
-                                    <ol className="list-decimal list-inside space-y-2 text-gray-300">
-                                        <li>Download the Exam Monitor token below.</li>
-                                        <li>Run the executable file.</li>
-                                        <li>The monitor will verify your environment and connect automatically.</li>
-                                        <li>Do not close the monitor until the exam is finished.</li>
+                            <div className="space-y-5 relative z-10">
+                                <div className="bg-[#0A0F1C]/50 rounded-2xl p-6 border border-indigo-500/10 text-left shadow-inner">
+                                    <h3 className="text-lg font-bold text-white mb-3 flex items-center">
+                                        <div className="w-2 h-2 rounded-full bg-blue-500 mr-2 shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+                                        Next Steps:
+                                    </h3>
+                                    <ol className="list-decimal list-inside space-y-3 text-indigo-100/70 font-medium">
+                                        <li><span className="text-gray-300">Download the Exam Monitor token below.</span></li>
+                                        <li><span className="text-gray-300">Run the executable file.</span></li>
+                                        <li><span className="text-gray-300">The monitor will verify your environment and connect automatically.</span></li>
+                                        <li><span className="text-red-300">Do not close the monitor until the exam is finished.</span></li>
                                     </ol>
                                 </div>
 
                                 <button
                                     onClick={handleDownload}
-                                    className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-lg flex items-center justify-center shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 transition-all"
+                                    className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-lg flex items-center justify-center shadow-[0_0_20px_rgba(37,71,244,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all"
                                 >
                                     <Download className="w-6 h-6 mr-2" />
                                     Download Exam Monitor
                                 </button>
 
-                                <div className="mt-8 pt-6 border-t border-gray-700">
-                                    <h3 className="text-lg font-semibold text-white mb-4">Exam Completion</h3>
-                                    <p className="text-gray-400 text-sm mb-4">
-                                        When you are finished with the exam, you must upload the encrypted ledger file generated by the monitor (e.g., exam_ledger_username_session_123_exam.enc).
+                                <div className="mt-8 pt-8 border-t border-indigo-500/10">
+                                    <h3 className="text-lg font-bold text-white mb-2">Exam Completion</h3>
+                                    <p className="text-indigo-300/60 text-sm mb-6 font-medium">
+                                        When you are finished with the exam, you must upload the encrypted ledger file generated by the monitor.
                                     </p>
 
-                                    <label className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg flex items-center justify-center shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 transition-all cursor-pointer">
+                                    <label className="w-full py-4 bg-gradient-to-r from-[#131B2F] to-[#0A0F1C] border border-indigo-500/30 hover:border-blue-400/50 text-white rounded-xl font-bold text-lg flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_rgba(37,71,244,0.2)] transition-all cursor-pointer group hover:scale-[1.02]">
                                         <input
                                             type="file"
                                             accept=".enc"
@@ -230,13 +239,15 @@ const StudentDashboard = () => {
                                                 }
                                             }}
                                         />
-                                        <CheckCircle className="w-6 h-6 mr-2" />
+                                        <div className="bg-blue-500/20 p-2 rounded-lg mr-3 group-hover:bg-blue-500/30 transition-colors">
+                                            <CheckCircle className="w-5 h-5 text-blue-400" />
+                                        </div>
                                         Upload Ledger & Finish
                                     </label>
 
                                     <button
                                         onClick={handleLeave}
-                                        className="w-full mt-4 py-2 text-red-500 hover:text-red-400 text-sm font-medium transition-colors"
+                                        className="w-full mt-6 py-2 text-red-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg text-sm font-bold transition-colors"
                                     >
                                         Emergency Exit (Without Upload)
                                     </button>

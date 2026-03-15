@@ -9,6 +9,7 @@ const CreateExamModal = ({ isOpen, onClose, onCreate }) => {
     const [formData, setFormData] = useState({
         password: '',
         start_time: '',
+        end_time: '',
         duration_minutes: 60
     });
 
@@ -20,9 +21,11 @@ const CreateExamModal = ({ isOpen, onClose, onCreate }) => {
         // For simplicity, let's assume local time input and convert to ISO string which backend might interpret as UTC if no offset.
         // Actually best to send ISO string.
         const isoDate = new Date(formData.start_time).toISOString();
+        const endIsoDate = new Date(formData.end_time).toISOString();
         onCreate({
             ...formData,
-            start_time: isoDate
+            start_time: isoDate,
+            end_time: endIsoDate
         });
     };
 
@@ -53,6 +56,16 @@ const CreateExamModal = ({ isOpen, onClose, onCreate }) => {
                         />
                     </div>
                     <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">End Time</label>
+                        <input
+                            type="datetime-local"
+                            required
+                            value={formData.end_time}
+                            onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                        />
+                    </div>
+                    <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Duration (Minutes)</label>
                         <input
                             type="number"
@@ -67,13 +80,13 @@ const CreateExamModal = ({ isOpen, onClose, onCreate }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
+                            className="px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
+                            className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg font-bold shadow-[0_0_15px_rgba(37,71,244,0.4)] transition-all hover:scale-105 active:scale-95"
                         >
                             Create Exam
                         </button>
@@ -135,20 +148,20 @@ const TeacherDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white font-sans selection:bg-blue-500/30">
+        <div className="min-h-screen bg-[#0A0F1C] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0A0F1C] to-black text-white font-sans selection:bg-blue-500/30">
             {/* Navbar */}
-            <nav className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-md sticky top-0 z-50">
+            <nav className="border-b border-indigo-900/30 bg-[#0A0F1C]/70 backdrop-blur-xl sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center space-x-3">
-                            <div className="bg-blue-600 p-2 rounded-lg shadow-lg shadow-blue-600/20">
+                            <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-2 rounded-xl shadow-[0_0_15px_rgba(37,71,244,0.3)]">
                                 <LayoutDashboard className="h-6 w-6 text-white" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight">Teacher Portal</span>
+                            <span className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Teacher Portal</span>
                         </div>
                         <div className="flex items-center space-x-4">
                             <div className="text-sm text-gray-400">
-                                <span className="text-gray-200 font-medium">{user?.sub}</span>
+                                <span className="text-indigo-200 font-medium">{user?.sub}</span>
                             </div>
                             <button
                                 onClick={handleLogout}
@@ -166,14 +179,14 @@ const TeacherDashboard = () => {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 {/* Header Section */}
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex justify-between items-center mb-10 mt-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-white">Exam Rooms</h1>
-                        <p className="text-gray-400 mt-1">Manage your active examination sessions</p>
+                        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 tracking-tight">Exam Rooms</h1>
+                        <p className="text-indigo-200/60 mt-2 font-medium">Manage your active examination sessions</p>
                     </div>
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-600/30 transition-all transform hover:scale-105 active:scale-95"
+                        className="flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl shadow-[0_0_20px_rgba(37,71,244,0.4)] transition-all transform hover:scale-105 active:scale-95 font-bold tracking-wide border border-blue-400/20"
                     >
                         <Plus className="h-5 w-5 mr-2" />
                         Create New Exam
@@ -194,55 +207,69 @@ const TeacherDashboard = () => {
                                 <p className="text-gray-500 mt-1">Click the button above to start your first exam session.</p>
                             </div>
                         ) : (
-                            exams.map((exam) => (
-                                <div key={exam.id} className="bg-gray-800 rounded-xl border border-gray-700 p-6 hover:border-gray-600 transition-colors shadow-lg">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="bg-gray-700/50 p-2 rounded-lg">
+                            exams.map((exam) => {
+                                const isTimePassed = exam.end_time ? new Date() > new Date(exam.end_time.endsWith('Z') ? exam.end_time : exam.end_time + 'Z') : false;
+                                const isEffectivelyActive = exam.is_active && !isTimePassed;
+
+                                return (
+                                <div key={exam.id} className="relative group bg-[#131B2F]/60 backdrop-blur-md rounded-2xl border border-indigo-500/10 p-6 hover:border-blue-500/30 transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgba(37,71,244,0.15)] overflow-hidden">
+                                    {/* Glass reflection effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                                    
+                                    <div className="flex justify-between items-start mb-5 relative z-10">
+                                        <div className="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20">
                                             <Calendar className="h-6 w-6 text-blue-400" />
                                         </div>
-                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${exam.is_active ? 'bg-green-500/20 text-green-300' : 'bg-gray-600 text-gray-300'}`}>
-                                            {exam.is_active ? 'Active' : 'Closed'}
+                                        <span className={`px-3 py-1 text-xs font-bold tracking-wider uppercase rounded-full border ${isEffectivelyActive ? 'bg-green-500/10 text-green-400 border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-gray-800 text-gray-400 border-gray-700'}`}>
+                                            {isEffectivelyActive ? 'Active' : 'Closed'}
                                         </span>
                                     </div>
 
-                                    <h3 className="text-xl font-bold text-white mb-2">Code: <span className="font-mono text-blue-400">{exam.room_code}</span></h3>
+                                    <h3 className="text-2xl font-black text-white mb-3 tracking-tight relative z-10">Code: <span className="font-mono text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">{exam.room_code}</span></h3>
 
                                     {/* Display Time Info */}
-                                    <div className="text-xs text-gray-500 mb-4 space-y-1">
-                                        <p>Start: {new Date(exam.start_time.endsWith('Z') ? exam.start_time : exam.start_time + 'Z').toLocaleString()}</p>
-                                        <p>Duration: {exam.duration_minutes} mins</p>
+                                    <div className="text-sm text-indigo-200/70 mb-5 space-y-1.5 font-medium relative z-10">
+                                        <p className="flex items-center"><span className="w-16 text-gray-500 text-xs uppercase tracking-wider">Start</span> <span className="text-gray-300">{new Date(exam.start_time.endsWith('Z') ? exam.start_time : exam.start_time + 'Z').toLocaleString()}</span></p>
+                                        <p className="flex items-center"><span className="w-16 text-gray-500 text-xs uppercase tracking-wider">End</span> <span className="text-gray-300">{exam.end_time ? new Date(exam.end_time.endsWith('Z') ? exam.end_time : exam.end_time + 'Z').toLocaleString() : "Not Set"}</span></p>
+                                        <p className="flex items-center"><span className="w-16 text-gray-500 text-xs uppercase tracking-wider">Length</span> <span className="text-blue-300 font-semibold">{exam.duration_minutes} mins</span></p>
                                     </div>
 
-                                    <div className="flex items-center text-sm text-gray-400 mb-6">
-                                        <span className="flex items-center"><Users className="w-4 h-4 mr-1" /> {exam.student_count || 0} Active</span>
-                                        <span className="flex items-center ml-4 text-gray-500"><Users className="w-4 h-4 mr-1" /> {exam.completed_count || 0} Completed</span>
+                                    <div className="flex items-center text-sm mb-6 bg-black/20 rounded-lg p-3 border border-white/5 relative z-10">
+                                        <div className="flex-1 flex flex-col items-center border-r border-white/10">
+                                            <span className="text-2xl font-bold text-white">{exam.student_count || 0}</span>
+                                            <span className="text-[10px] uppercase tracking-wider text-green-400/80 font-bold mt-1">Active</span>
+                                        </div>
+                                        <div className="flex-1 flex flex-col items-center">
+                                            <span className="text-2xl font-bold text-gray-300">{exam.completed_count || 0}</span>
+                                            <span className="text-[10px] uppercase tracking-wider text-blue-400/80 font-bold mt-1">Completed</span>
+                                        </div>
                                     </div>
 
-                                    <div className="flex space-x-3">
+                                    <div className="flex space-x-2 relative z-10">
                                         <button
                                             onClick={() => navigate(`/room/${exam.id}`)}
-                                            className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                                            className="flex-1 bg-blue-600/10 hover:bg-blue-600 border border-blue-500/30 hover:border-blue-500 text-blue-400 hover:text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-[0_0_15px_rgba(37,71,244,0.4)]"
                                         >
                                             View Logs
                                         </button>
                                         <button
                                             onClick={() => navigator.clipboard.writeText(exam.room_code)}
-                                            className="bg-gray-700 hover:bg-gray-600 text-gray-300 p-2 rounded-lg transition-colors"
+                                            className="bg-gray-800/80 hover:bg-gray-700 border border-gray-700 text-gray-300 p-2.5 rounded-xl transition-colors"
                                             title="Copy Code"
                                         >
                                             <Copy className="h-5 w-5" />
                                         </button>
                                         <button
                                             onClick={() => deleteExam(exam.id)}
-                                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 p-2 rounded-lg transition-colors"
+                                            className="bg-red-500/10 hover:bg-red-500 border border-red-500/20 hover:border-red-500 text-red-400 hover:text-white p-2.5 rounded-xl transition-all hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]"
                                             title="Delete Room"
                                         >
                                             <Trash2 className="h-5 w-5" />
                                         </button>
                                     </div>
                                 </div>
-
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 )}

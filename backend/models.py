@@ -25,6 +25,7 @@ class ExamRoom(Base):
     # New Fields
     password = Column(String, nullable=True)
     start_time = Column(DateTime, default=datetime.datetime.utcnow)
+    end_time = Column(DateTime, nullable=True)
     duration_minutes = Column(Integer, default=60)
     
     teacher = relationship("User", back_populates="exams")

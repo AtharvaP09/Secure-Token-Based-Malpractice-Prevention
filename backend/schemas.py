@@ -29,11 +29,13 @@ class ExamRoomBase(BaseModel):
     room_code: str
     is_active: bool = True
     start_time: datetime
+    end_time: Optional[datetime] = None
     duration_minutes: int
 
 class ExamRoomCreate(BaseModel):
     password: str
     start_time: datetime
+    end_time: Optional[datetime] = None
     duration_minutes: int
 
 class ExamRoomResponse(ExamRoomBase):

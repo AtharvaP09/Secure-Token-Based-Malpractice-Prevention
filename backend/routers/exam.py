@@ -43,6 +43,7 @@ def create_exam_room(
         teacher_id=current_user.id,
         password=exam_in.password,
         start_time=exam_in.start_time,
+        end_time=exam_in.end_time,
         duration_minutes=exam_in.duration_minutes
     )
     db.add(new_room)
@@ -103,10 +104,9 @@ def join_exam(
     if now < room.start_time:
         raise HTTPException(status_code=400, detail="Exam has not started yet")
         
-    # Calculate end time
-    exam_end_time = room.start_time + timedelta(minutes=room.duration_minutes)
-    if now > exam_end_time:
-        raise HTTPException(status_code=400, detail="Exam has ended")
+    # Deadline Validation
+    if room.end_time and now > room.end_time:
+        raise HTTPException(status_code=400, detail="Exam entry time has ended")
         
     # Password Validation
     if room.password and room.password != join_request.password:
@@ -208,11 +208,11 @@ def log_activity(
     if session.end_time:
         command = "stop"
     else:
-        # 2. Time over (check room duration)
+        # 2. Time over (check token duration relative to student's join time)
         # Access room via relationship (lazy load)
         if session.room:
-             exam_end_time = session.room.start_time + timedelta(minutes=session.room.duration_minutes)
-             if datetime.utcnow() > exam_end_time:
+             session_end_time = session.start_time + timedelta(minutes=session.room.duration_minutes)
+             if datetime.utcnow() > session_end_time:
                   command = "stop"
 
     return {"status": "logged", "count": len(log_batch.logs), "command": command}
