@@ -1,75 +1,73 @@
-// src/App.js
-import './App.css';
-import UserAuth from "./Pages/UserAuth.jsx";
-import { Route, Routes, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import GetToken from './pages/GetToken.jsx';
-import PairDropDashboard from './Pages/PairDropDashboard.jsx'; // <-- new PairDrop dashboard
-import Landing from './Pages/Landing.jsx';
-import ProtectedRoute from './ProtectedRoute';
-import PairDropRoom from './Pages/PairDropRoom.jsx'; // <-- new PairDrop room
-import Submissions from './Pages/Submissions.jsx';
-import AdminPanel from './Pages/AdminPanel.jsx';
-import Realtime from './Pages/Realtime.jsx';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import TeacherDashboard from './pages/TeacherDashboard';
+import StudentDashboard from './pages/StudentDashboard';
+import ExamDetails from './pages/ExamDetails';
+import AdminDashboard from './pages/AdminDashboard';
+
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">Loading...</div>;
+  if (!user) return <Navigate to="/login" />;
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    // If user is logged in but role doesn't match, send them to their dashboard
+    if (user.role === 'teacher' || user.role === 'admin') return <Navigate to="/teacher" />;
+    return <Navigate to="/student" />;
+  }
+
+  return children;
+};
+
+// Root redirector
+const Root = () => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">Loading...</div>;
+  if (!user) return <Navigate to="/login" />;
+
+  if (user.role === 'teacher' || user.role === 'admin') return <Navigate to="/teacher" />;
+  return <Navigate to="/student" />;
+}
 
 function App() {
-  // const location = useLocation();
-  // const [displayLocation, setDisplayLocation] = useState(location);
-  // const [transitionStage, setTransitionStage] = useState('fadeIn');
-
-  // useEffect(() => {
-  //   if (location.pathname !== displayLocation.pathname) {
-  //     setTransitionStage('fadeOut');
-
-  //     // Delay changing the displayed location until transition completes
-  //     const timer = setTimeout(() => {
-  //       setDisplayLocation(location);
-  //       setTransitionStage('fadeIn');
-  //     }, 800); // Half of overlay animation (800ms / 2)
-
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [location, displayLocation]);
-
   return (
-    <div className={`app-content`}>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        
-        <Route path="/auth" element={<UserAuth />} />
-        
-        <Route path="/gettoken" element={<GetToken />} />
-        <Route path="/realtime/:roomid" element={<Realtime />} />
-        
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <PairDropDashboard />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          <Route path="/teacher" element={
+            <ProtectedRoute allowedRoles={['teacher', 'admin']}>
+              <TeacherDashboard />
             </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/room/:roomId"
-          element={
-            <ProtectedRoute>
-              <PairDropRoom />
+          } />
+
+          <Route path="/student" element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <StudentDashboard />
             </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/submissions/:roomid"
-          element={
-            <ProtectedRoute>
-              <Submissions />
+          } />
+
+          <Route path="/room/:roomId" element={
+            <ProtectedRoute allowedRoles={['teacher', 'admin']}>
+              <ExamDetails />
             </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </div>
+          } />
+
+          <Route path="/admin" element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/" element={<Root />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
