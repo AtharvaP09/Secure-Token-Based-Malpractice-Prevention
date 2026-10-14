@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Copy, LogOut, LayoutDashboard, Calendar, Users, Trash2 } from 'lucide-react';
+import { Plus, Copy, LogOut, LayoutDashboard, Calendar, Users, Trash2, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // Simple Modal Component
@@ -248,9 +248,10 @@ const TeacherDashboard = () => {
                                     <div className="flex space-x-2 relative z-10">
                                         <button
                                             onClick={() => navigate(`/room/${exam.id}`)}
-                                            className="flex-1 bg-blue-600/10 hover:bg-blue-600 border border-blue-500/30 hover:border-blue-500 text-blue-400 hover:text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-[0_0_15px_rgba(37,71,244,0.4)]"
+                                            className="flex-1 flex items-center justify-center space-x-1.5 bg-blue-600/10 hover:bg-blue-600 border border-blue-500/30 hover:border-blue-500 text-blue-400 hover:text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-[0_0_15px_rgba(37,71,244,0.4)]"
                                         >
-                                            View Logs
+                                            <BarChart3 className="h-4 w-4" />
+                                            <span>Analytics & Logs</span>
                                         </button>
                                         <button
                                             onClick={() => navigator.clipboard.writeText(exam.room_code)}

@@ -355,6 +355,306 @@ async def upload_ledger(
         print(f"Decryption error: {e}")
         raise HTTPException(status_code=400, detail=f"Failed to process ledger: {str(e)}")
 
+@router.get("/room/{room_id}/analytics")
+def get_room_analytics(
+    room_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    if current_user.role not in ["teacher", "admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    room = db.query(models.ExamRoom).filter(models.ExamRoom.id == room_id).first()
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+
+    if current_user.role == "teacher" and room.teacher_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    sessions = db.query(models.ExamSession).filter(models.ExamSession.room_id == room_id).all()
+
+    total_students = len(sessions)
+    active_students = 0
+    completed_students = 0
+    ledger_uploaded_count = 0
+
+    clean_students = 0
+    warning_students = 0
+    critical_students = 0
+    zero_logs_students = 0
+
+    total_logs_count = 0
+    total_suspicious_logs = 0
+
+    device_tampering_count = 0
+    window_switch_count = 0
+    clipboard_count = 0
+    vm_detected_count = 0
+    network_threat_count = 0
+
+    students_summary = []
+    timeline_map = {}
+
+    for s in sessions:
+        if s.end_time:
+            completed_students += 1
+        else:
+            active_students += 1
+
+        if s.ledger_uploaded:
+            ledger_uploaded_count += 1
+
+        s_logs = s.logs or []
+        s_total = len(s_logs)
+        s_suspicious = 0
+        s_device = 0
+        s_window = 0
+        s_clipboard = 0
+        s_vm = 0
+        s_network = 0
+        top_infractions = []
+
+        for log in s_logs:
+            total_logs_count += 1
+            log_type_lower = (log.log_type or "").lower()
+            content_lower = (log.content or "").lower()
+
+            if log.timestamp:
+                bucket = log.timestamp.strftime("%H:%M")
+                if bucket not in timeline_map:
+                    timeline_map[bucket] = {"time": bucket, "normal": 0, "suspicious": 0}
+                if log.is_suspicious:
+                    timeline_map[bucket]["suspicious"] += 1
+                else:
+                    timeline_map[bucket]["normal"] += 1
+
+            if log.is_suspicious:
+                s_suspicious += 1
+                total_suspicious_logs += 1
+
+                if len(top_infractions) < 3 and log.content not in top_infractions:
+                    top_infractions.append(log.content)
+
+                # 1. Clipboard / Keystroke Action (Ctrl+C / Ctrl+V / Copy / Paste) - Check FIRST
+                if "copy" in content_lower or "paste" in content_lower or "ctrl+c" in content_lower or "ctrl+v" in content_lower or "clipboard" in content_lower:
+                    s_clipboard += 1
+                    clipboard_count += 1
+                # 2. Device Tampering (Keyboard / Mouse plugged, USB inserted)
+                elif log_type_lower == "device" or "connected" in content_lower or "disconnected" in content_lower or "inserted" in content_lower or "usb" in content_lower or "mouse" in content_lower or ("keyboard" in content_lower and "action" not in content_lower):
+                    s_device += 1
+                    device_tampering_count += 1
+                # 3. Virtual Machine
+                elif "vm" in content_lower or "virtual" in content_lower:
+                    s_vm += 1
+                    vm_detected_count += 1
+                # 4. Window / App Switching
+                elif "window" in log_type_lower or "window" in content_lower or any(kw in content_lower for kw in ["chat", "gpt", "claude", "gemini", "chegg", "perplexity"]):
+                    s_window += 1
+                    window_switch_count += 1
+                # 5. Network & Web
+                elif "url" in log_type_lower or "dns" in log_type_lower or "network" in content_lower:
+                    s_network += 1
+                    network_threat_count += 1
+
+        if s_total == 0:
+            zero_logs_students += 1
+            risk_tier = "ZERO_LOGS"
+            integrity_score = 0
+        elif s_suspicious >= 3:
+            critical_students += 1
+            risk_tier = "CRITICAL"
+            integrity_score = max(5, 100 - (s_suspicious * 15))
+        elif s_suspicious >= 1:
+            warning_students += 1
+            risk_tier = "WARNING"
+            integrity_score = max(50, 100 - (s_suspicious * 15))
+        else:
+            clean_students += 1
+            risk_tier = "CLEAN"
+            integrity_score = 100
+
+        students_summary.append({
+            "session_id": s.id,
+            "student_id": s.student_id,
+            "username": s.student.username if s.student else f"Student #{s.student_id}",
+            "email": s.student.email if s.student else "N/A",
+            "is_active": s.end_time is None,
+            "start_time": s.start_time.isoformat() if s.start_time else None,
+            "end_time": s.end_time.isoformat() if s.end_time else None,
+            "total_logs": s_total,
+            "suspicious_logs": s_suspicious,
+            "risk_tier": risk_tier,
+            "integrity_score": integrity_score,
+            "ledger_uploaded": s.ledger_uploaded,
+            "device_alerts": s_device,
+            "window_alerts": s_window,
+            "clipboard_alerts": s_clipboard,
+            "vm_alerts": s_vm,
+            "network_alerts": s_network,
+            "top_infractions": top_infractions
+        })
+
+    tier_order = {"CRITICAL": 0, "WARNING": 1, "ZERO_LOGS": 2, "CLEAN": 3}
+    students_summary.sort(key=lambda x: (tier_order.get(x["risk_tier"], 4), -x["suspicious_logs"]))
+
+    timeline = sorted(timeline_map.values(), key=lambda x: x["time"])
+
+    return {
+        "room_id": room.id,
+        "room_code": room.room_code,
+        "created_at": room.created_at.isoformat() if room.created_at else None,
+        "start_time": room.start_time.isoformat() if room.start_time else None,
+        "end_time": room.end_time.isoformat() if room.end_time else None,
+        "duration_minutes": room.duration_minutes,
+        "metrics": {
+            "total_students": total_students,
+            "active_students": active_students,
+            "completed_students": completed_students,
+            "ledger_uploaded_count": ledger_uploaded_count,
+            "clean_students": clean_students,
+            "warning_students": warning_students,
+            "critical_students": critical_students,
+            "zero_logs_students": zero_logs_students,
+            "total_logs": total_logs_count,
+            "total_suspicious": total_suspicious_logs,
+            "clean_percentage": round((clean_students / total_students * 100), 1) if total_students > 0 else 0,
+            "critical_percentage": round((critical_students / total_students * 100), 1) if total_students > 0 else 0
+        },
+        "risk_distribution": [
+            {"tier": "Clean (0 Flags)", "count": clean_students, "color": "#10B981"},
+            {"tier": "Low Risk (1-2 Flags)", "count": warning_students, "color": "#F59E0B"},
+            {"tier": "Critical (3+ Flags)", "count": critical_students, "color": "#EF4444"},
+            {"tier": "Zero Logs (Inactive)", "count": zero_logs_students, "color": "#64748B"}
+        ],
+        "violation_categories": [
+            {"category": "Device Tampering", "count": device_tampering_count, "color": "#F97316"},
+            {"category": "Window / App Switching", "count": window_switch_count, "color": "#8B5CF6"},
+            {"category": "Copy / Paste (Ctrl+C/V)", "count": clipboard_count, "color": "#EC4899"},
+            {"category": "Virtual Machine", "count": vm_detected_count, "color": "#EF4444"},
+            {"category": "Network & DNS Queries", "count": network_threat_count, "color": "#06B6D4"}
+        ],
+        "timeline": timeline,
+        "students": students_summary
+    }
+
+@router.get("/room/{room_id}/export_powerbi")
+def export_room_powerbi_csv(
+    room_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db)
+):
+    if current_user.role not in ["teacher", "admin"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    room = db.query(models.ExamRoom).filter(models.ExamRoom.id == room_id).first()
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+
+    if current_user.role == "teacher" and room.teacher_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    sessions = db.query(models.ExamSession).filter(models.ExamSession.room_id == room_id).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "SessionID",
+        "StudentID",
+        "StudentUsername",
+        "StudentEmail",
+        "ExamCode",
+        "SessionStatus",
+        "TotalLogs",
+        "SuspiciousLogs",
+        "IntegrityScore",
+        "RiskTier",
+        "IsZeroLogs",
+        "DeviceAlerts",
+        "WindowAlerts",
+        "ClipboardAlerts",
+        "VmAlerts",
+        "NetworkAlerts",
+        "LedgerUploaded",
+        "StartTime",
+        "EndTime",
+        "TopViolation"
+    ])
+
+    for s in sessions:
+        s_logs = s.logs or []
+        s_total = len(s_logs)
+        s_suspicious = 0
+        s_device = 0
+        s_window = 0
+        s_clipboard = 0
+        s_vm = 0
+        s_network = 0
+        top_violation = "None"
+
+        for log in s_logs:
+            if log.is_suspicious:
+                s_suspicious += 1
+                if top_violation == "None":
+                    top_violation = (log.content or "").replace(",", ";")
+                log_type_lower = (log.log_type or "").lower()
+                if "copy" in content_lower or "paste" in content_lower or "ctrl+c" in content_lower or "ctrl+v" in content_lower or "clipboard" in content_lower:
+                    s_clipboard += 1
+                elif log_type_lower == "device" or "connected" in content_lower or "disconnected" in content_lower or "inserted" in content_lower or "usb" in content_lower or "mouse" in content_lower or ("keyboard" in content_lower and "action" not in content_lower):
+                    s_device += 1
+                elif "vm" in content_lower or "virtual" in content_lower:
+                    s_vm += 1
+                elif "window" in log_type_lower or "window" in content_lower:
+                    s_window += 1
+                elif "url" in log_type_lower or "dns" in log_type_lower:
+                    s_network += 1
+
+        if s_total == 0:
+            risk_tier = "ZERO_LOGS"
+            integrity = 0
+            is_zero = "YES"
+        elif s_suspicious >= 3:
+            risk_tier = "CRITICAL"
+            integrity = max(5, 100 - (s_suspicious * 15))
+            is_zero = "NO"
+        elif s_suspicious >= 1:
+            risk_tier = "WARNING"
+            integrity = max(50, 100 - (s_suspicious * 15))
+            is_zero = "NO"
+        else:
+            risk_tier = "CLEAN"
+            integrity = 100
+            is_zero = "NO"
+
+        writer.writerow([
+            s.id,
+            s.student_id,
+            s.student.username if s.student else f"User_{s.student_id}",
+            s.student.email if s.student else "N/A",
+            room.room_code,
+            "Completed" if s.end_time else "Active",
+            s_total,
+            s_suspicious,
+            integrity,
+            risk_tier,
+            is_zero,
+            s_device,
+            s_window,
+            s_clipboard,
+            s_vm,
+            s_network,
+            "YES" if s.ledger_uploaded else "NO",
+            s.start_time.isoformat() if s.start_time else "",
+            s.end_time.isoformat() if s.end_time else "",
+            top_violation
+        ])
+
+    output.seek(0)
+    return StreamingResponse(
+        io.BytesIO(output.getvalue().encode('utf-8-sig')),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=PowerBI_Exam_{room.room_code}_Analytics.csv"}
+    )
+
 @router.get("/room/{room_id}/export_csv")
 def export_room_logs_csv(
     room_id: str,
@@ -366,22 +666,27 @@ def export_room_logs_csv(
         
     logs = db.query(models.LogEntry).join(models.ExamSession).filter(models.ExamSession.room_id == room_id).order_by(models.LogEntry.timestamp).all()
     
-    
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["Student ID", "Timestamp", "Type", "Content", "Suspicious"])
+    writer.writerow(["Log ID", "Session ID", "Student Username", "Timestamp", "Type", "Content", "Suspicious", "Source"])
     
     for log in logs:
-        writer.writerow([log.id, log.timestamp, log.log_type, log.content, "YES" if log.is_suspicious else "No"]) # log.id is log id, we need student id from session?
-        # log entry doesn't have student_id directly, it has session_id.
-        # But we joined ExamSession.
-        # We can access log.session.student_id if relationship is set up.
-        # Assuming simplified export for now.
+        student_name = log.session.student.username if log.session and log.session.student else f"Session_{log.session_id}"
+        writer.writerow([
+            log.id,
+            log.session_id,
+            student_name,
+            log.timestamp.isoformat() if log.timestamp else "",
+            log.log_type,
+            log.content,
+            "YES" if log.is_suspicious else "NO",
+            log.source
+        ])
         
     output.seek(0)
     
     return StreamingResponse(
-        io.BytesIO(output.getvalue().encode()),
+        io.BytesIO(output.getvalue().encode('utf-8-sig')),
         media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename=exam_room_{room_id}_logs.csv"}
     )

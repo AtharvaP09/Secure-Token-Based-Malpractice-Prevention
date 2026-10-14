@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ['tokens\\monitor.py'],
-    pathex=['.'],
+    ['C:\\Users\\Atharva\\Desktop\\project x\\Secure-Token-Based-Malpractice-Prevention\\tokens\\monitor.py'],
+    pathex=['C:\\Users\\Atharva\\Desktop\\project x\\Secure-Token-Based-Malpractice-Prevention'],
     binaries=[],
     datas=[],
-    hiddenimports=['shared', 'shared.crypto_utils', 'keyboard'],
+    hiddenimports=['shared', 'shared.crypto_utils', 'wmi', 'pythoncom', 'win32com'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

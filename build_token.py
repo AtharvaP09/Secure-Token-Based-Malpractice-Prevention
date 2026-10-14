@@ -12,6 +12,9 @@ PyInstaller.__main__.run([
     '--name=ExamToken',
     '--add-data=tokens/shared;shared', # Adjust based on how we import
     '--hidden-import=win32timezone',
+    '--hidden-import=wmi',
+    '--hidden-import=pythoncom',
+    '--hidden-import=win32com',
     '--clean',
     '--distpath=dist',
     '--workpath=build',

@@ -67,6 +67,7 @@ const StudentDashboard = () => {
             if (!exeResponse.ok) throw new Error("Failed to fetch monitor executable");
             const exeBlob = await exeResponse.blob();
             zip.file("monitor.exe", exeBlob);
+            zip.file("run_monitor.bat", `@echo off\r\ncd /d "%~dp0"\r\necho Starting Secure Exam Monitor...\r\nstart "" "monitor.exe"\r\n`);
 
             // 3. Generate ZIP
             const content = await zip.generateAsync({ type: "blob" });

@@ -16,7 +16,9 @@ args = [
     f'--paths={project_root}',
     '--hidden-import=shared',
     '--hidden-import=shared.crypto_utils',
-    # Add other hidden imports if needed (e.g. win32com for WMI if we add it)
+    '--hidden-import=wmi',
+    '--hidden-import=pythoncom',
+    '--hidden-import=win32com',
     '--log-level=WARN',
     '--clean',
     '--distpath', os.path.join(project_root, 'dist'),
