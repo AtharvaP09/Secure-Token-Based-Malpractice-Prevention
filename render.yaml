@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: secure-exam-monitor-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: exam-monitor-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+databases:
+  - name: exam-monitor-db
+    databaseName: exam_monitor
+    user: exam_monitor_user
+    plan: free

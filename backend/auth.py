@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -7,10 +8,11 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from . import models, schemas, database
 
-# Secret key (in production, use env var)
-SECRET_KEY = "supersecretkeyneedschange"
+# Secret key — set SECRET_KEY env var in production (Render dashboard).
+# A random fallback is used for local dev only.
+SECRET_KEY = os.environ.get("SECRET_KEY", "local-dev-only-change-in-production")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440 # 24 hours
+ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

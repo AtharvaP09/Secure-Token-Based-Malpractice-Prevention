@@ -1,6 +1,6 @@
-# Backend
+# ── Backend (all platforms) ───────────────────────────────────────────────────
 fastapi
-uvicorn
+uvicorn[standard]
 sqlalchemy
 pydantic
 python-multipart
@@ -9,11 +9,21 @@ passlib[bcrypt]
 websockets
 dnspython
 
-# Tokens
+# PostgreSQL driver (used in production on Render/Neon)
+psycopg2-binary
+
+# ── Token Monitor — cross-platform ───────────────────────────────────────────
 requests
 psutil
-pywin32
 cryptography
 pyinstaller
-wmi
 keyboard==0.13.5
+
+# ── Token Monitor — Linux only ────────────────────────────────────────────────
+pyudev; sys_platform == "linux"
+python-xlib; sys_platform == "linux"
+evdev; sys_platform == "linux"
+
+# ── Token Monitor — Windows only ─────────────────────────────────────────────
+pywin32; sys_platform == "win32"
+wmi; sys_platform == "win32"

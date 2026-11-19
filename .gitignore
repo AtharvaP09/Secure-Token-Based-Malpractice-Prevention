@@ -1,7 +1,37 @@
+# Python
 venv/
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Database files (never commit local SQLite)
 *.db
+*.db-journal
+
+# Logs
 *.log
+
+# Encrypted ledger files
 *.enc
+
+# Build / dist artifacts (PyInstaller)
 build/
 dist/
+*.spec
+
+# Environment secrets — NEVER commit this
+.env
+.env.local
+.env.production
+
+# Frontend build output
+frontend/dist/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

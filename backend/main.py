@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine
@@ -9,15 +10,18 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Secure Exam Monitor API")
 
-# CORS Configuration
-origins = [
-    "http://localhost:5173",  # Vite default
-    "http://127.0.0.1:5173",
-]
+# CORS — in production, ALLOWED_ORIGINS env var should be set to your
+# Vercel frontend URL, e.g. "https://secure-exam-monitor.vercel.app"
+# Multiple origins can be comma-separated.
+_raw_origins = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173"
+)
+origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all origins for dev
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

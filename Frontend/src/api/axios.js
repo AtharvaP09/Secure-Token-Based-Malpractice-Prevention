@@ -1,10 +1,14 @@
 import axios from 'axios';
 
+// In production (Vercel), VITE_API_URL is set to the Render backend URL.
+// In development, it falls back to localhost.
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 const api = axios.create({
-    baseURL: 'http://localhost:8000', // Adjust if backend port differs
+    baseURL: API_BASE_URL,
 });
 
-// Add a request interceptor to include the JWT token
+// Attach JWT token to every request automatically
 api.interceptors.request.use(
     (config) => {
         const token = sessionStorage.getItem('token');

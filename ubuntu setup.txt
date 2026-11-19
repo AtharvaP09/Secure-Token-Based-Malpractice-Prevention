@@ -1,0 +1,33 @@
+Step 1 — Copy the project to Ubuntu
+
+Transfer the project folder to your Ubuntu machine (USB / scp / Git push+pull).
+
+Step 2 — Run the setup script (one time only)
+bash
+cd Secure-Token-Based-Malpractice-Prevention
+bash setup_ubuntu.sh
+
+This installs Python, Node, all pip deps, npm deps, and adds your user to the input group automatically.
+
+Step 3 — Log out & log back in
+
+Required so the input group takes effect (for keyboard monitoring without sudo).
+
+Step 4 — Start the backend
+bash
+source venv/bin/activate
+uvicorn backend.main:app --reload
+Step 5 — Start the frontend (new terminal)
+bash
+cd frontend && npm run dev
+Step 6 (optional) — Build the Linux monitor binary
+bash
+source venv/bin/activate
+python scripts/build_token.py
+# Output: dist/monitor  (Linux ELF binary, like .exe but for Linux)
+
+
+
+One important thing before you start
+
+At the Ubuntu login screen, click the ⚙ gear icon → select "Ubuntu on Xorg" instead of the default Wayland session. This is needed for window-title tracking to work. Everything else (process monitoring, USB detection, DNS monitoring, keyboard hooks) works on both Wayland and X11.
