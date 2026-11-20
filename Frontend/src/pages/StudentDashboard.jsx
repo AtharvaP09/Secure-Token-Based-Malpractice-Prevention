@@ -56,7 +56,10 @@ const StudentDashboard = () => {
             // 1. Generate Config JSON
             // In production (Vercel), VITE_API_URL points to the Render backend.
             // Locally it falls back to localhost:8000.
-            const apiUrl = import.meta.env.VITE_API_URL || "https://secure-token-based-malpractice-prevention.onrender.com";
+            const apiUrl = (
+    import.meta.env.VITE_API_URL ||
+    "https://secure-token-based-malpractice-prevention.onrender.com"
+).replace(/\/+$/, "");
             const config = {
                 api_url: apiUrl,
                 jwt_token: sessionStorage.getItem('token'),
