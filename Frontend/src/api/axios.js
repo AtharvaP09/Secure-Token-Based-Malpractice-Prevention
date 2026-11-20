@@ -1,8 +1,10 @@
+
 import axios from 'axios';
 
-// In production (Vercel), VITE_API_URL is set to the Render backend URL.
-// In development, it falls back to localhost.
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Backend API URL
+const API_BASE_URL =
+    import.meta.env.VITE_API_URL ||
+    'https://secure-token-based-malpractice-prevention.onrender.com';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -12,9 +14,11 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = sessionStorage.getItem('token');
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
     },
     (error) => Promise.reject(error)
