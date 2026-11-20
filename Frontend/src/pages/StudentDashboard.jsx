@@ -54,17 +54,21 @@ const StudentDashboard = () => {
             const zip = new JSZip();
 
             // 1. Generate Config JSON
+            // In production (Vercel), VITE_API_URL points to the Render backend.
+            // Locally it falls back to localhost:8000.
+            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
             const config = {
-                api_url: "http://localhost:8000",
+                api_url: apiUrl,
                 jwt_token: sessionStorage.getItem('token'),
                 session_id: session.session_id,
                 username: user?.sub
             };
             zip.file("monitor_config.json", JSON.stringify(config, null, 2));
 
-            // 2. Fetch Monitor Executable (Bust cache to ensure latest version is downloaded)
-            const exeResponse = await fetch(`/static/monitor.exe?t=${new Date().getTime()}`);
-            if (!exeResponse.ok) throw new Error("Failed to fetch monitor executable");
+            // 2. Fetch Monitor Executable from /public/monitor.exe (served by Vercel as a static file)
+            // Cache-busted to always get the latest binary.
+            const exeResponse = await fetch(`/monitor.exe?t=${new Date().getTime()}`);
+            if (!exeResponse.ok) throw new Error("Monitor executable not found. Please contact your administrator.");
             const exeBlob = await exeResponse.blob();
             zip.file("monitor.exe", exeBlob);
             zip.file("run_monitor.bat", `@echo off\r\ncd /d "%~dp0"\r\necho Starting Secure Exam Monitor...\r\nstart "" "monitor.exe"\r\n`);
