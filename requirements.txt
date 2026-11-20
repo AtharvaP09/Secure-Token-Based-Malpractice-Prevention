@@ -8,6 +8,7 @@ python-jose[cryptography]
 passlib[bcrypt]
 websockets
 dnspython
+pydantic[email]
 
 # PostgreSQL driver (used in production on Render/Neon)
 psycopg2-binary
