@@ -69,7 +69,17 @@ const StudentDashboard = () => {
             // Cache-busted to always get the latest binary.
             const exeResponse = await fetch(`/monitor.exe?t=${new Date().getTime()}`);
             if (!exeResponse.ok) throw new Error("Monitor executable not found. Please contact your administrator.");
+
+            // Guard against Vercel SPA fallback returning index.html instead of the binary
+            const contentType = exeResponse.headers.get("content-type") || "";
+            if (contentType.includes("text/html")) {
+                throw new Error("Server returned HTML instead of the monitor binary. Please contact your administrator.");
+            }
+
             const exeBlob = await exeResponse.blob();
+            if (exeBlob.size < 1000000) { // sanity check: real exe must be > 1 MB
+                throw new Error(`Monitor file is too small (${exeBlob.size} bytes). The binary may not have been deployed correctly.`);
+            }
             zip.file("monitor.exe", exeBlob);
             zip.file("run_monitor.bat", `@echo off\r\ncd /d "%~dp0"\r\necho Starting Secure Exam Monitor...\r\nstart "" "monitor.exe"\r\n`);
 
